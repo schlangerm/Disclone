@@ -1,0 +1,27 @@
+const { sq } = require("../config/db");
+const { DataTypes, Sequelize } = require('sequelize');
+
+
+const Chat = sq.define('Chat', {
+    id: {
+        type: DataTypes.UUID,
+        primaryKey: true,
+        defaultValue: DataTypes.UUIDV4, // Automatically generate UUID
+        allowNull: false
+    },
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false
+    }
+}, {
+    tableName: 'chats',
+    timestamps: true,
+});
+
+
+Chat.associate = (models) => {
+    Chat.belongsToMany(models.User, { through: 'chat_users' });
+    Chat.hasMany(models.Message, { foreignKey: 'chat_id'});
+};
+
+module.exports = { Chat };
