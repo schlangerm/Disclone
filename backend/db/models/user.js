@@ -28,8 +28,9 @@ const User = sq.define("User", {
 useBcrypt(User)
 
 User.associate = (models) => {
-    User.belongsToMany(models.Chat, { through: 'chat_users' });
+    User.belongsToMany(models.Chat, { through: 'chat_users', foreignKey: 'user_id', otherKey: 'chat_id' });
     User.hasMany(models.Message, { foreignKey: 'sender_id' });
+    User.hasMany(models.Chat, { foreignKey: 'creator_id' });
 };
 
 module.exports = { User }

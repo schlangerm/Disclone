@@ -1,8 +1,8 @@
 import React from 'react';
 import { useState } from 'react';
 
-import './main_body.css'
-import './globals.css';
+import './css/main_body.css'
+import './css/globals.css';
 
 const MainBody = ({ activeChatroom }) => {
     const [message, setMessage] = useState("");
@@ -16,7 +16,7 @@ const MainBody = ({ activeChatroom }) => {
               <div>
                 {" "}
                 {
-                  activeChatroom.users.find((user) => user.id === message.sender)
+                  activeChatroom.users.find((user) => user.id === message.sender) //This is completely changing. Get messages from the db associated with this chat
                     .name
                 }{" "}
               </div>

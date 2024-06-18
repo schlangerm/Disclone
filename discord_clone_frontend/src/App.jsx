@@ -5,7 +5,7 @@ import HomePage from './HomePage.jsx';
 import PrivateRoute from './router/PrivateRoute';
 import RegisterPage from './RegisterPage.jsx';
 
-import './globals.css'
+import './css/globals.css'
 
 
 

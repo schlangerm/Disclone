@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
-
-import './globals.css'
+import React, { useContext, useState } from 'react';
 import { useAuth } from './hooks/AuthProvider';
+import { URLContext } from './hooks/URLProvider';
 
-import './register_page.css'
+import './css/globals.css'
+import './css/register_page.css'
+
 
 const RegisterPage = () => {
     const user = useAuth()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const { appURL } = useContext(URLContext)
 
   
     return (
@@ -48,6 +50,13 @@ const RegisterPage = () => {
             }
           }}
         />
+        <div className='login-offer'>
+          <h1>Already Registered?</h1>
+          <p>
+            Login{' '}
+            <a href={`${appURL}/login`}>here</a>
+          </p>
+        </div>
       </div>
     );
 }

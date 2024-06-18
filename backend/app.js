@@ -115,7 +115,11 @@ async function main() {
             jwt.verify(token, SECRETKEY, async (err, payload) => {
                 if (err) {
                     console.log(err);
-                    return res.sendStatus(403); 
+                    return res.status(401).json({
+                        success: false,
+                        error: 'Unauthorized',
+                        data: null
+                    }); 
                 }
                 const userIdFromJWT = payload.id;
                 const dbUser = await models.User.findByPk(userIdFromJWT);
@@ -248,15 +252,21 @@ async function main() {
             if (user && user.authenticate(user_json.password)){
                 // sign jwt here
                 const token = jwt.sign(
-                    { id: user.id }, SECRETKEY, { expiresIn: '8h' }
+                    { 
+                        id: user.id,
+                        email: user.email }, SECRETKEY, { expiresIn: '8h' } 
                 );
 
-                res.status(200).json({ //UPDATE THIS 
-                    user: {
-                        id: user.id,
-                        email: user.email,
+                res.status(200).json({
+                    success: true,
+                    error: null,
+                    data: { // POTENTIAL ISSUE - PUT USER OBJ INSIDE DATA
+                        user: {
+                            id: user.id,
+                            email: user.email,
+                        },
+                        token: token
                     },
-                    token: token
                 });
             } else {
                 res.status(401).json({ 
@@ -284,7 +294,7 @@ async function main() {
                     error: "Email and password are required to register",
                     data: null
                 })
-                res.status(403) //lookup bad request
+                res.status(400)
                 return
             }
             let user_json = req.body
@@ -295,13 +305,26 @@ async function main() {
                }*/
             const new_user = await models.User.create({ email: user_json.email, password: user_json.password });
             console.log("User: ", new_user.email, "'s auto-generated ID:", new_user.id);
-            res.status(200).json({
-                success: true,
-                error: null,
-                data: {
-                    message: `Successful registry of ${new_user.email}`
-                }
-            })
+            if (new_user) {
+                const token = jwt.sign(
+                    { 
+                        id: new_user.id,
+                        email: new_user.email }, SECRETKEY, { expiresIn: '8h' } 
+                );
+                res.status(200).json({
+                    success: true,
+                    error: null,
+                    data: {
+                        message: `Successful registry of ${new_user.email}`,
+                        user: {
+                            id: new_user.id,
+                            email: new_user.email,
+                        },
+                        token: token
+
+                    }
+                });
+            }
         } catch (error) {
             console.log("Error registering new user: ", error)
             res.status(500).json({
