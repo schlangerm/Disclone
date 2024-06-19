@@ -23,7 +23,7 @@ const HomePage = () => {
     const chatroomsGet = async (data) => { //this is called a hook i think
       try {
         console.log('asking for chatrooms') 
-        const reponse = await fetch(`${backendURL}/api/chatrooms`, {
+        const response = await fetch(`${backendURL}/api/chatrooms`, {
         method: 'get',
         headers: {
           "Content-Type": "application/json",
@@ -111,10 +111,26 @@ const HomePage = () => {
     ];
     */
 
-    const onSelectChatroom = (chatroom) => { 
-      // get chatroom from the backend
+    const onSelectChatroom = async (chatroom) => { 
+      // get chatroom from the backend NEXT UP
+      chatroomId = chatroom.id
+      console.log("fetching chatroom id=", chatroomId)
+      try {
+        response = await fetch(`${backendURL}/api/chat?id=${chatroomId}`, {
+          method: 'get',
+          headers: {
+            "Content-Type" : "application/json",
+          },
+        });
 
-      setActiveChatroom(chatroom);
+        if (response.success) {
+          const chat = await response.json();
+          console.log("Fetched chat: ", chat);
+        }
+      } catch (error) {
+        console.error(error)
+      }
+      setActiveChatroom(chat);
     };
 
     console.log("homepage email received: ", email);

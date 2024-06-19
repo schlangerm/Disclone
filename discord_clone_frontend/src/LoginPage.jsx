@@ -37,7 +37,7 @@ const LoginPage = () => {
           </label>
           <button
             children="Submit"
-            onClick={(event) => {
+            onClick={() => { //took out event, i dont think its important
               if (email && password) {
                 console.log(email, password);
                 user.loginAction(

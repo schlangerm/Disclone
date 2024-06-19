@@ -1,0 +1,12 @@
+6/18 -  beginning of this devlog 
+        yesterday I implemented first drafts of planned chat routes and endpoints, reworked a lot of the frontend, added URL context, 
+        and afterwards found out that URLs are generally stored in environmental variables. Oops! would be an easy fix if it becomes important.
+
+        today I plan on finishing up the chats routes, setting up the db calls for messages to display in chats, and tuning the frontend to display them correctly
+
+        down the line- refactor context and hooks into two separate directories, import context into hooks.
+
+        today I finished chat routes, set up db calls for messages to display in chats, tuned frontend. 
+        
+        Next up: tune message routes and frontend, think about what's next after that! So many things...
+        could do content types, avatars, adding friends, a million other things!

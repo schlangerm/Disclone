@@ -7,6 +7,24 @@ import './css/globals.css';
 const MainBody = ({ activeChatroom }) => {
     const [message, setMessage] = useState("");
 
+    const onMessageSend = async (message, activeChatroomId ) => {
+      const response = await fetch(`${backendURL}/api/message`, {
+        method: 'put',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          message: message,
+          chatroomId: activeChatroomId
+        })
+      });
+
+      if (response.success) {
+        const res = await response.json();
+        //update chatroom maybe? talk through it when return
+      }
+    }
+
     return (
       <div className="main-body">
         <h4>{activeChatroom.name}</h4>
@@ -16,12 +34,12 @@ const MainBody = ({ activeChatroom }) => {
               <div>
                 {" "}
                 {
-                  activeChatroom.users.find((user) => user.id === message.sender) //This is completely changing. Get messages from the db associated with this chat
-                    .name
+                  activeChatroom.users.find((user) => user.id === message.sender_id) //up to button seems done?
+                    .email
                 }{" "}
               </div>
-              <div> {message.message} </div>
-              <div> {message.timestamp.toLocaleString()} </div>
+              <div> {message.content} </div>
+              <div> {message.createdAt.toLocaleString()} </div> 
             </div>
           ))}
         </div>
@@ -34,8 +52,9 @@ const MainBody = ({ activeChatroom }) => {
           />
           <button
             children="Submit"
-            onClick={(event) => {
+            onClick={() => {
               console.log(message);
+              onMessageSend(message, activeChatroom.id);
             }}
           />
         </div>

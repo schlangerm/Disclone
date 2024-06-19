@@ -24,69 +24,6 @@ async function main() {
 
     await dbconfig.testDbConnection()
 
-    const chatrooms = [
-        {
-        id: 1,
-        name: "Love birds",
-        users: [
-            {
-            id: 1,
-            name: "Matt",
-            },
-            {
-            id: 2,
-            name: "Liza",
-            },
-        ],
-        messages: [
-            {
-            id: 1,
-            message: "Hii",
-            sender: 1,
-            chatroom: 1,
-            timestamp: new Date(2024, 4, 5),
-            },
-            {
-            id: 2,
-            message: "hola",
-            sender: 2,
-            chatroom: 1,
-            timestamp: new Date(),
-            },
-        ],
-        },
-        {
-        id: 2,
-        name: "M names",
-        users: [
-            {
-            id: 1,
-            name: "Matt",
-            },
-            {
-            id: 3,
-            name: "Manu",
-            },
-        ],
-        messages: [
-            {
-            id: 3,
-            message: "Matt is my name",
-            sender: 1,
-            chatroom: 2,
-            timestamp: new Date(2024, 4, 4),
-            },
-            {
-            id: 4,
-            message: "Manu is my name",
-            sender: 3,
-            chatroom: 2,
-            timestamp: new Date(2024, 4, 5),
-            },
-        ],
-        },
-    ]
-
     app.use(cors()); //change if ever in production //
                                                     //
     // app.use(cors({                               //
@@ -141,9 +78,9 @@ async function main() {
     setupChatRoutes(app);
 
     app.post('/api/message', async (req, res) => {
-        console.log("user: ", req.user, "requesting to send a message to chatroom ", req.data.chatroomId); //make it so: req.data.chatroomId
+        console.log("user: ", req.user, "requesting to send a message to chatroom ", req.body.chatroomId); //make it so: req.data.chatroomId
         //take chatroom id and message text
-        message = req.data.message //make it so: req.data.message
+        message = req.body.message //make it so: req.body.message
         messageType = 'text'
         //sanitize the message
         //send message into db
@@ -152,7 +89,7 @@ async function main() {
             content: message, 
             type: messageType,
             sender_id: req.user.id,
-            chat_id: req.data.chatroomId })
+            chat_id: req.body.chatroomId })
         } catch (error) {
             res.status(500).json({
                 success: false,
