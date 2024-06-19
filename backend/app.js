@@ -24,69 +24,6 @@ async function main() {
 
     await dbconfig.testDbConnection()
 
-    const chatrooms = [
-        {
-        id: 1,
-        name: "Love birds",
-        users: [
-            {
-            id: 1,
-            name: "Matt",
-            },
-            {
-            id: 2,
-            name: "Liza",
-            },
-        ],
-        messages: [
-            {
-            id: 1,
-            message: "Hii",
-            sender: 1,
-            chatroom: 1,
-            timestamp: new Date(2024, 4, 5),
-            },
-            {
-            id: 2,
-            message: "hola",
-            sender: 2,
-            chatroom: 1,
-            timestamp: new Date(),
-            },
-        ],
-        },
-        {
-        id: 2,
-        name: "M names",
-        users: [
-            {
-            id: 1,
-            name: "Matt",
-            },
-            {
-            id: 3,
-            name: "Manu",
-            },
-        ],
-        messages: [
-            {
-            id: 3,
-            message: "Matt is my name",
-            sender: 1,
-            chatroom: 2,
-            timestamp: new Date(2024, 4, 4),
-            },
-            {
-            id: 4,
-            message: "Manu is my name",
-            sender: 3,
-            chatroom: 2,
-            timestamp: new Date(2024, 4, 5),
-            },
-        ],
-        },
-    ]
-
     app.use(cors()); //change if ever in production //
                                                     //
     // app.use(cors({                               //
@@ -115,7 +52,11 @@ async function main() {
             jwt.verify(token, SECRETKEY, async (err, payload) => {
                 if (err) {
                     console.log(err);
-                    return res.sendStatus(403); 
+                    return res.status(401).json({
+                        success: false,
+                        error: 'Unauthorized',
+                        data: null
+                    }); 
                 }
                 const userIdFromJWT = payload.id;
                 const dbUser = await models.User.findByPk(userIdFromJWT);
@@ -137,9 +78,9 @@ async function main() {
     setupChatRoutes(app);
 
     app.post('/api/message', async (req, res) => {
-        console.log("user: ", req.user, "requesting to send a message to chatroom ", req.data.chatroomId); //make it so: req.data.chatroomId
+        console.log("user: ", req.user, "requesting to send a message to chatroom ", req.body.chatroomId); //make it so: req.data.chatroomId
         //take chatroom id and message text
-        message = req.data.message //make it so: req.data.message
+        message = req.body.message //make it so: req.body.message
         messageType = 'text'
         //sanitize the message
         //send message into db
@@ -148,7 +89,7 @@ async function main() {
             content: message, 
             type: messageType,
             sender_id: req.user.id,
-            chat_id: req.data.chatroomId })
+            chat_id: req.body.chatroomId })
         } catch (error) {
             res.status(500).json({
                 success: false,
@@ -248,15 +189,21 @@ async function main() {
             if (user && user.authenticate(user_json.password)){
                 // sign jwt here
                 const token = jwt.sign(
-                    { id: user.id }, SECRETKEY, { expiresIn: '8h' }
+                    { 
+                        id: user.id,
+                        email: user.email }, SECRETKEY, { expiresIn: '8h' } 
                 );
 
-                res.status(200).json({ //UPDATE THIS 
-                    user: {
-                        id: user.id,
-                        email: user.email,
+                res.status(200).json({
+                    success: true,
+                    error: null,
+                    data: { // POTENTIAL ISSUE - PUT USER OBJ INSIDE DATA
+                        user: {
+                            id: user.id,
+                            email: user.email,
+                        },
+                        token: token
                     },
-                    token: token
                 });
             } else {
                 res.status(401).json({ 
@@ -284,7 +231,7 @@ async function main() {
                     error: "Email and password are required to register",
                     data: null
                 })
-                res.status(403) //lookup bad request
+                res.status(400)
                 return
             }
             let user_json = req.body
@@ -295,13 +242,26 @@ async function main() {
                }*/
             const new_user = await models.User.create({ email: user_json.email, password: user_json.password });
             console.log("User: ", new_user.email, "'s auto-generated ID:", new_user.id);
-            res.status(200).json({
-                success: true,
-                error: null,
-                data: {
-                    message: `Successful registry of ${new_user.email}`
-                }
-            })
+            if (new_user) {
+                const token = jwt.sign(
+                    { 
+                        id: new_user.id,
+                        email: new_user.email }, SECRETKEY, { expiresIn: '8h' } 
+                );
+                res.status(200).json({
+                    success: true,
+                    error: null,
+                    data: {
+                        message: `Successful registry of ${new_user.email}`,
+                        user: {
+                            id: new_user.id,
+                            email: new_user.email,
+                        },
+                        token: token
+
+                    }
+                });
+            }
         } catch (error) {
             console.log("Error registering new user: ", error)
             res.status(500).json({

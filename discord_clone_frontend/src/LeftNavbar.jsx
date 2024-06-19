@@ -1,7 +1,7 @@
 import React from 'react';
 
-import './globals.css';
-import './left_navbar.css';
+import './css/globals.css';
+import './css/left_navbar.css';
 
 const LeftNavbar = ({ chatrooms, onSelectChatroom }) => {
     return (

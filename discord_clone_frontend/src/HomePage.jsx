@@ -1,22 +1,52 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useState } from 'react';
 import MainBody from './MainBody.jsx'
 import LeftNavbar from './LeftNavbar.jsx'
 import { useAuth } from './hooks/AuthProvider';
 
-import './globals.css';
-import './homepage.css';
+import './css/globals.css';
+import './css/homepage.css';
+import { useURL } from './hooks/URLProvider.jsx';
 
 
 const HomePage = () => {
   //TODO: get chatrooms from api
-  //      import user context here for email and check auth
+  //      import user context here for email and check auth DONE
     const [activeChatroom, setActiveChatroom] = useState(null);
     const user = useAuth()
-    //console.log("!! user:", user)
+    const { backendURL } = useURL()
+    console.log("!! user:", user)
     //console.log("!!! email:", user.user.email)
-    const email = user.user.email 
+    const email = user?.user?.email;
 
+
+    const chatroomsGet = async (data) => { //this is called a hook i think
+      try {
+        console.log('asking for chatrooms') 
+        const response = await fetch(`${backendURL}/api/chatrooms`, {
+        method: 'get',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data)
+        });
+        const res = await response.json();
+        console.log('response is: ', res)
+        if (res.error) {
+          alert(res.error);
+          return;
+        }
+        if (res.success) {
+          const chatrooms = res.data.results
+          console.log('chatrooms received: ', chatrooms)
+          return chatrooms
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+/*
     const chatrooms = [
       {
         id: 1,
@@ -79,17 +109,54 @@ const HomePage = () => {
         ],
       },
     ];
-    const onSelectChatroom = (chatroom) => {
-      setActiveChatroom(chatroom);
+    */
+
+    const onSelectChatroom = async (chatroom) => { 
+      // get chatroom from the backend NEXT UP
+      chatroomId = chatroom.id
+      console.log("fetching chatroom id=", chatroomId)
+      try {
+        response = await fetch(`${backendURL}/api/chat?id=${chatroomId}`, {
+          method: 'get',
+          headers: {
+            "Content-Type" : "application/json",
+          },
+        });
+
+        if (response.success) {
+          const chat = await response.json();
+          console.log("Fetched chat: ", chat);
+        }
+      } catch (error) {
+        console.error(error)
+      }
+      setActiveChatroom(chat);
     };
+
     console.log("homepage email received: ", email);
     return (
       <div className="homepage">
         <header className="top-header">
           <div className="user-email">{email}</div>
+          <div className='logout-button'>
+            <button
+              children="Logout"
+              onClick={(event) => {
+                user.logOut()
+              }}/>
+          </div>
         </header>
-        <LeftNavbar chatrooms={chatrooms} onSelectChatroom={onSelectChatroom} />
-        {activeChatroom && <MainBody activeChatroom={activeChatroom} />}
+        <div className='main-content-wrapper'>
+          <LeftNavbar chatrooms={chatroomsGet(  //UNTESTED - need to finish chat post, look in chat.router.js on backend
+            {
+              headers: {
+                authorization: `bearer ${user.token}`
+              },
+              user: user.user
+            }
+          )} onSelectChatroom={onSelectChatroom} />
+          {activeChatroom && <MainBody activeChatroom={activeChatroom} />}
+        </div>
       </div>
     );
 }

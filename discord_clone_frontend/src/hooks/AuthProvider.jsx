@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useURL } from "./URLProvider";
 
 const AuthContext = createContext();
 
@@ -7,25 +8,37 @@ const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(localStorage.getItem("AuthToken"));
     const navigate = useNavigate();
+    const { backendURL } = useURL()
     
     const loginAction = async (data) => {
         try {
-            const response = await fetch("http://localhost:3001/auth/login", {
+            const response = await fetch(`${backendURL}/auth/login`, {
                 method: 'post',
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify(data), 
             });
-            console.log('response finished successfully')
             const res = await response.json();
-            if (res.user) {
-                setUser(res.user);
-                setToken(res.token);
-                localStorage.setItem("AuthToken", res.token);
+            console.log('response is:', res)
+            if (res.error) {
+                alert(res.error);
+                navigate('/login');
+                return;
+            }
+            if (res.data.user) {
+                setUser(res.data.user);
+                console.log('resdatauser exists!', res.data.user)
+                setToken(res.data.token);
+                localStorage.setItem("AuthToken", res.data.token);
                 navigate('/');
                 console.log('token successful')
                 return;
+            }
+            else {
+                setToken("");
+                navigate('/login');
+                alert('Something went wrong, please log in');
             }
             throw new Error(res.error);
         } catch (err) {
@@ -36,7 +49,7 @@ const AuthProvider = ({ children }) => {
     const registerAction = async (data) => {
         try {
             console.log('hi register,', data);
-            const response = await fetch("http://localhost:3001/auth/register", {
+            const response = await fetch(`${backendURL}/auth/register`, {
                 method: 'post',
                 headers: {
                     "Content-Type": "application/json",
@@ -45,6 +58,8 @@ const AuthProvider = ({ children }) => {
             });
             const res = await response.json();
             if (res.success) {
+                setUser(res.data.user);
+                setToken(res.data.token);
                 navigate('/');
                 return;
             }
@@ -59,6 +74,7 @@ const AuthProvider = ({ children }) => {
         setToken("");
         localStorage.removeItem("AuthToken");
         navigate("/login");
+        return;
     };
 
     return (
