@@ -20,7 +20,7 @@ const HomePage = () => {
     const email = user?.user?.email;
 
 
-    const chatroomsGet = async (data) => { //this is called a hook i think
+    const chatroomsGet = async (data) => { // api call
       try {
         console.log('asking for chatrooms') 
         const response = await fetch(`${backendURL}/api/chatrooms`, {
@@ -112,7 +112,7 @@ const HomePage = () => {
     */
 
     const onSelectChatroom = async (chatroom) => { 
-      // get chatroom from the backend NEXT UP
+      //UNTESTED
       chatroomId = chatroom.id
       console.log("fetching chatroom id=", chatroomId)
       try {
@@ -149,9 +149,6 @@ const HomePage = () => {
         <div className='main-content-wrapper'>
           <LeftNavbar chatrooms={chatroomsGet(  //UNTESTED - need to finish chat post, look in chat.router.js on backend
             {
-              headers: {
-                authorization: `bearer ${user.token}`
-              },
               user: user.user
             }
           )} onSelectChatroom={onSelectChatroom} />

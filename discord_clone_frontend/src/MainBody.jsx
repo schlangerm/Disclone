@@ -22,6 +22,7 @@ const MainBody = ({ activeChatroom }) => {
       if (response.success) {
         const res = await response.json();
         //update chatroom maybe? talk through it when return
+        alert('Message sent successfully');
       }
     }
 

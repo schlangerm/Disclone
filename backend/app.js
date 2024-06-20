@@ -81,7 +81,7 @@ async function main() {
         console.log("user: ", req.user, "requesting to send a message to chatroom ", req.body.chatroomId); //make it so: req.data.chatroomId
         //take chatroom id and message text
         message = req.body.message //make it so: req.body.message
-        messageType = 'text'
+        messageType = 'text' //change when implementing pics etc
         //sanitize the message
         //send message into db
         try {
