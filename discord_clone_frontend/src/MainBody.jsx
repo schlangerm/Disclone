@@ -7,7 +7,7 @@ import './css/globals.css';
 const MainBody = ({ activeChatroom }) => {
     const [message, setMessage] = useState("");
 
-    const onMessageSend = async (message, activeChatroomId ) => {
+    const onMessageSend = async (message, activeChatroomId ) => { // api call
       const response = await fetch(`${backendURL}/api/message`, {
         method: 'put',
         headers: {
