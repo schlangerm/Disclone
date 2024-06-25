@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { useAuth } from './hooks/AuthProvider';
-import { URLContext } from './hooks/URLProvider';
+import { useURL } from './hooks/URLProvider';
 
 import './css/globals.css'
 import './css/register_page.css'
@@ -10,7 +10,7 @@ const RegisterPage = () => {
     const user = useAuth()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const { appURL } = useContext(URLContext)
+    const { appURL } = useURL()
 
   
     return (

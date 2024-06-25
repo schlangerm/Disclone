@@ -1,6 +1,7 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useURL } from "./URLProvider";
+import { jwtDecode } from "jwt-decode";
 
 const AuthContext = createContext();
 
@@ -8,7 +9,22 @@ const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(localStorage.getItem("AuthToken"));
     const navigate = useNavigate();
-    const { backendURL } = useURL()
+    const { backendURL } = useURL();
+
+    useEffect(() => {
+        //console.log("UseEffect is running");
+        const token = localStorage.getItem('AuthToken');
+        if (token) {
+            try {
+                //console.log("Theres a token :)")
+                const decoded = jwtDecode(token);
+                setUser(decoded);
+            } catch (error) {
+                console.error(error);
+                localStorage.removeItem('AuthToken');
+            }
+        }
+    }, []); //empty dependency array so that it only runs once, when component mounts
     
     const loginAction = async (data) => {
         try {

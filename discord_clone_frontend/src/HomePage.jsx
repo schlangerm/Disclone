@@ -20,15 +20,14 @@ const HomePage = () => {
     const email = user?.user?.email;
 
 
-    const chatroomsGet = async (data) => { // api call
+    const chatroomsGet = async () => { // api call TODO: set auth header
       try {
         console.log('asking for chatrooms') 
         const response = await fetch(`${backendURL}/api/chatrooms`, {
-        method: 'get',
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data)
+          method: 'get',
+          headers: {
+            "Content-Type": "application/json",
+          }
         });
         const res = await response.json();
         console.log('response is: ', res)
@@ -147,11 +146,9 @@ const HomePage = () => {
           </div>
         </header>
         <div className='main-content-wrapper'>
-          <LeftNavbar chatrooms={chatroomsGet(  //UNTESTED - need to finish chat post, look in chat.router.js on backend
-            {
-              user: user.user
-            }
-          )} onSelectChatroom={onSelectChatroom} />
+          <LeftNavbar 
+            chatrooms={chatroomsGet()}  //UNTESTED - need to finish chat post, look in chat.router.js on backend
+            onSelectChatroom={onSelectChatroom} />
           {activeChatroom && <MainBody activeChatroom={activeChatroom} />}
         </div>
       </div>

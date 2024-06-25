@@ -10,3 +10,15 @@
         
         Next up: tune message routes and frontend, think about what's next after that! So many things...
         could do content types, avatars, adding friends, a million other things!
+
+6/24 -  I did a few things while out of town, but nothing major.
+
+        Today I worked on the frontend (boo!). I added a modal form to come up when adding a new chat. Then, I started bugfixing everything that was going wrong
+        since the last time I ran the whole thing together. I fixed some things, which brought me back to several issues which I also fixed. 
+        - Fixed URL context provider, had some typos in imports from previous attempts in some files here and there. Also, authprovider uses urlcontext provider
+                but was being rendered outside of the urlprovider component. oops!
+        - Removed the body from the chatroomGet api call, as it is a get request. oops!
+        - Found a bug with the way the chatroom map was being rendered in the left navbar component, didn't fix yet as I found the unauthorized errors more pressing:
+        - Added ability for jwt to be decoded and user state set from the payload
+        Next up: Authorization headers! Everything is there, just need to set it correctly. Then, logic for adding chatrooms (pretty sure this is already handled on
+                the backend, so should be relatively plug and play. 
