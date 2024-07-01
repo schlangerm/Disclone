@@ -1,6 +1,13 @@
 const { Sequelize } = require("sequelize");
+const dotenv = require('dotenv');
 
-const sequelize = new Sequelize('disclone', 'postgres', 'rentos', {
+dotenv.config();
+
+const DBPASS = process.env.DBPASS
+
+//console.log(DBPASS, typeof(DBPASS));
+
+const sequelize = new Sequelize('disclone', 'postgres', DBPASS, {
   host: 'localhost',
   port: 5432,
   dialect: 'postgres'

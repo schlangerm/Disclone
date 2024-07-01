@@ -1,10 +1,21 @@
-//I think a lot of these need to have a return value and dont, need to check on that
+const models = require('../db/models');
+
 
 async function setupChatRoutes(app) {
     app.get('/api/chatrooms', async (req, res) => {
         console.log("user: ", req.user, "requesting chatrooms");
-        //db call to get id of chatrooms that this user is part of
-        const userChats = await models.Chat.findAll({ where: {user_id: req.user.id } });
+        if (models.User_Chat) {
+            console.log("User_Chat model is defined");
+        }
+        const userChats = await models.User.findOne({ 
+            where: { id: req.user.id },
+            include: [
+                {
+                    model: models.Chat,
+                    through: models.UserChat
+                }
+            ]
+        });
         console.log('the chat rows are: ', userChats)
         //db call to get the chatrooms
         //get just name, id, avatar pic or something

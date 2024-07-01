@@ -13,7 +13,7 @@ dotenv.config();
 const SECRETKEY = process.env.SECRETKEY
 const LOGREQUESTS = false
 
-console.log(SECRETKEY)
+//console.log(SECRETKEY, typeof(SECRETKEY));
 
 
 
@@ -59,7 +59,7 @@ async function main() {
                     }); 
                 }
                 const userIdFromJWT = payload.id;
-                const dbUser = await models.User.findByPk(userIdFromJWT);
+                const dbUser = await models.User.findByPk(userIdFromJWT); //this will need to be error handled im sure
                 req.user = dbUser;
                 next()
                 

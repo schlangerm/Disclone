@@ -20,13 +20,14 @@ const HomePage = () => {
     const email = user?.user?.email;
 
 
-    const chatroomsGet = async () => { // api call TODO: set auth header
+    const chatroomsGet = async () => { // api call
       try {
         console.log('asking for chatrooms') 
         const response = await fetch(`${backendURL}/api/chatrooms`, {
           method: 'get',
           headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer: ${user?.token}`
           }
         });
         const res = await response.json();

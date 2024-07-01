@@ -1,3 +1,5 @@
+6/17 -  - COMMIT - (first git commit) updated chat routes and models, updated the frontend, added url context
+
 6/18 -  beginning of this devlog 
         yesterday I implemented first drafts of planned chat routes and endpoints, reworked a lot of the frontend, added URL context, 
         and afterwards found out that URLs are generally stored in environmental variables. Oops! would be an easy fix if it becomes important.
@@ -7,9 +9,13 @@
         down the line- refactor context and hooks into two separate directories, import context into hooks.
 
         today I finished chat routes, set up db calls for messages to display in chats, tuned frontend. 
-        
+       
+        - COMMIT - finished chat routes
+
         Next up: tune message routes and frontend, think about what's next after that! So many things...
         could do content types, avatars, adding friends, a million other things!
+
+6/20 -  - COMMIT - commit for travel, minor changes
 
 6/24 -  I did a few things while out of town, but nothing major.
 
@@ -20,5 +26,24 @@
         - Removed the body from the chatroomGet api call, as it is a get request. oops!
         - Found a bug with the way the chatroom map was being rendered in the left navbar component, didn't fix yet as I found the unauthorized errors more pressing:
         - Added ability for jwt to be decoded and user state set from the payload
+
+        - COMMIT - see above
+
         Next up: Authorization headers! Everything is there, just need to set it correctly. Then, logic for adding chatrooms (pretty sure this is already handled on
-                the backend, so should be relatively plug and play. 
+                the backend, so should be relatively plug and play) 
+
+6/25 -  early morning reading- Axios and Fetch() for handling api calls. Something to consider while I fix up the api calls today to have auth headers.
+
+        fixed auth header, but led me to working on the backend (hooray) when the db call grabbing the user through a junction table failed, tuned models and added a
+        user_chat model explicitly instead of it just being instantiated through associations. 
+        
+        Next I need to look up how Sequelize queries from a junction table with a model in the most efficient way, instead of making multiple db calls. 
+        It would be a simple join query in sql, so I'm sure it's easily doable, just need to search the sequelize documentation.
+
+6/26 -  spent all day trying to get the dang sequelize query to work through the junction table. It didn't. Keeps throwing TypeError, cannot read properties of undefined
+        for Sequelize's getTableName() method. I poked around in the sequelize code and I guess it is somehow not recognizing the junction table model as a model, although 
+        I queried the model to check and it works. I also tried passing in the specific model as the through attribute, also didn't work. If this keeps up, I may just do 
+        a raw sql query for now and see if I can't come back to this. Pretty disappointed in the sequelize documentation- this is pretty basic stuff, querying through a
+        junction table.
+
+6/30 - Wrote up a StackOverflow question about the sequelize query issues. Going with a raw sql query in the meantime.
