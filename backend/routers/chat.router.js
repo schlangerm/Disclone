@@ -5,14 +5,14 @@ async function setupChatRoutes(app) {
     app.get('/api/chatrooms', async (req, res) => {
         console.log("user: ", req.user, "requesting chatrooms");
         if (models.User_Chat) {
-            console.log("User_Chat model is defined");
+            console.log("User_Chat model is defined")
         }
         const userChats = await models.User.findOne({ 
             where: { id: req.user.id },
             include: [
                 {
                     model: models.Chat,
-                    through: models.UserChat
+                    through: models.User_Chat
                 }
             ]
         });
