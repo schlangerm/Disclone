@@ -12,7 +12,7 @@ const AuthProvider = ({ children }) => {
     const { backendURL } = useURL();
 
     useEffect(() => {
-        //console.log("UseEffect is running");
+        console.log("UseEffect is running");
         const token = localStorage.getItem('AuthToken');
         if (token) {
             try {

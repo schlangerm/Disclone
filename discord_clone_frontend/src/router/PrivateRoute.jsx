@@ -7,7 +7,7 @@ const PrivateRoute = () => {
   if (!user?.token) {
     alert('Please log in');
     return <Navigate to="/login" />;
-  } //could do something with jwt here if no user obj; put token in an authprovider hook to decode and set user
+  } 
   return <Outlet />;
 };
 

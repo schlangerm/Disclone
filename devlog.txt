@@ -46,4 +46,17 @@
         a raw sql query for now and see if I can't come back to this. Pretty disappointed in the sequelize documentation- this is pretty basic stuff, querying through a
         junction table.
 
-6/30 - Wrote up a StackOverflow question about the sequelize query issues. Going with a raw sql query in the meantime.
+6/30 -  Wrote up a StackOverflow question about the sequelize query issues. Going with a raw sql query in the meantime.
+
+7/1 -   StackOverflow didn't get any bites, but using a double one-many relationship from users and chats to users_chats instead of the many-many with users_chats as the junction model has allowed me to skirt that
+        weird sq error! I'm so pleased. Now it's frontend time.
+
+7/2 -   - Tuned chat routes to put exactly what the frontend needs in response
+        - Switched sync to no longer force, the db is not being changed so much that it needs to be recreated every time anymore
+        - Added double one-many relationship associations between User_Chat model and the Chat and User models
+        - Tracked down an issue where some functions were running multiple times, put one inside a useEffect() and the others were actually because of React.StrictMode
+        - Finished the ChatFormModal's form, but have not finished submission logic
+        - Correctly formatted components to display info from backend
+        - Set up scrolldown for new messages
+        Next up!
+        - Websockets to have true real-time chats :D

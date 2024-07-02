@@ -2,7 +2,7 @@ import { useState } from "react";
 import Modal from 'react-modal';
 import '../css/chat_form_modal.css';
 
-const ChatFormModal = (isOpen, onRequestClose) => { //TODO: add friends-list capability so that we can easily select those we want in the chat, and prevent being added by a random person 
+const ChatFormModal = ({ isOpen, onRequestClose }) => { //TODO: add friends-list capability so that we can easily select those we want in the chat, and prevent being added by a random person 
     const [chatName, setChatName] = useState('');
     const [addedUsers, setAddedUsers] = useState(['']);
 
@@ -22,7 +22,7 @@ const ChatFormModal = (isOpen, onRequestClose) => { //TODO: add friends-list cap
         // TODO submit logic here
         console.log("Chat name: ", chatName);
         console.log("Added Users: ", addedUsers);
-        onRequestClose();
+        
     }
     
     return (
@@ -49,7 +49,7 @@ const ChatFormModal = (isOpen, onRequestClose) => { //TODO: add friends-list cap
                     <label>
                         Add Users to Chat:{" "}
                     </label>
-                    {userInputs.map((addedUser, index) => (
+                    {addedUsers.map((addedUser, index) => (
                         <input
                             key={index}
                             name={`addedUser-${index}`}
