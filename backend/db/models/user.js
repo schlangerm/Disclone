@@ -30,7 +30,6 @@ useBcrypt(User)
 User.associate = (models) => {
     User.belongsToMany(models.Chat, { through: models.User_Chat, foreignKey: 'user_id', otherKey: 'chat_id' });
     User.hasMany(models.Message, { foreignKey: 'sender_id' });
-    User.hasMany(models.Chat, { foreignKey: 'creator_id' });
 };
 
 module.exports = { User }

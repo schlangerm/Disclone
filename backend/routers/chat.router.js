@@ -9,17 +9,29 @@ async function setupChatRoutes(app) {
         }
         const userChats = await models.User.findOne({ 
             where: { id: req.user.id },
+            attributes: { exclude: ['password'] },
             include: [
                 {
                     model: models.Chat,
-                    through: models.User_Chat
+                    through: { attributes: [] },
+                    include: [
+                        {
+                            model: models.Message
+                        },
+                        {
+                            model: models.User,
+                            attributes: { exclude: ['password'] },
+                            through: { attributes: [] }
+                        }
+                    ]
                 }
             ]
         });
         console.log('the chat rows are: ', userChats)
         //db call to get the chatrooms
         //get just name, id, avatar pic or something
-        const chatrooms = userChats; //to test the above
+        const chatrooms = userChats.Chats
+        console.log("chatrooms: ", chatrooms)
 
         //send the chatrooms back if successful
         res.status(200);
@@ -90,9 +102,9 @@ async function setupChatRoutes(app) {
     app.post('/api/chat', async (req, res) => { 
         //take userid array (creator and added), initial message, creates a chat
         const chatName = req.query.name;
-        const userArray = req.body.userArray;
+        const userArray = req.body.userArray; //make sure userArray[0] is creator (maybe the req.user.id?)
         const initialMessage = req.body.initialMessage;
-
+        
         //UNTESTED CODE BELOW
         if (!userArray || !initialMessage) {
             return res.status(400).json({
@@ -103,13 +115,22 @@ async function setupChatRoutes(app) {
         }
 
         try {
-            const creatorId = userArray[0]
+            console.log("\nuserarray: ", userArray);
+            const creatorId = userArray.shift()
+            console.log("\nuserarray after shift: ", userArray);
             const newChat = await models.Chat.create({ 
-                name: chatName, 
-                creator_id: creatorId 
+                name: chatName
             });
+            const creator = await models.User.findOne({
+                where: { id: creatorId }
+            });
+            await newChat.addUser(creator, { through: { is_owner: true }});
             
-            await newChat.addUsers(userArray);
+            const members = await models.User.findAll({
+                where: { id: userArray }
+            });
+
+            await newChat.addUsers(members);
 
             const newMessage = await models.Message.create({ 
                 content: initialMessage.content, 

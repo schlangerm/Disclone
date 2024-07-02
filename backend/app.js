@@ -32,8 +32,8 @@ async function main() {
 
     
     console.log('\nsync starting');
-    sq.sync({ force: true }).then(() => {
-        console.log("All models synced, rewritten");
+    sq.sync().then(() => {
+        console.log("All models synced, NOT rewritten");
     }).catch(error => {
         console.error("Error syncing models:", error);
     });
@@ -78,7 +78,7 @@ async function main() {
     setupChatRoutes(app);
 
     app.post('/api/message', async (req, res) => {
-        console.log("user: ", req.user, "requesting to send a message to chatroom ", req.body.chatroomId); //make it so: req.data.chatroomId
+        console.log("user: ", req.user, "requesting to send a message to chatroom ", req.body.chatroomId); //make it so: req.body.chatroomId
         //take chatroom id and message text
         message = req.body.message //make it so: req.body.message
         messageType = 'text' //change when implementing pics etc
@@ -113,7 +113,7 @@ async function main() {
         try {
             console.log("user: ", req.user, "requesting to get a message ");
             //takes a messageid and puts a message in the res
-            messageid = req.data.messageid;
+            messageid = req.query.id;
             dbmessage = models.Message.findOne({ where: {id: messageid }});
 
             res.status(200).json({
