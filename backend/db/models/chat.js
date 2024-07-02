@@ -1,5 +1,5 @@
 const { sq } = require("../config/db");
-const { DataTypes, Sequelize } = require('sequelize');
+const { DataTypes } = require('sequelize');
 
 
 const Chat = sq.define('Chat', {
@@ -20,9 +20,8 @@ const Chat = sq.define('Chat', {
 
 
 Chat.associate = (models) => {
-    Chat.belongsToMany(models.User, { through: 'chat_users', foreignKey: 'chat_id', otherKey: 'user_id' }); //without otherKey, the table had chat_id and UserId, strangely
+    Chat.belongsToMany(models.User, { through: models.User_Chat, foreignKey: 'chat_id', otherKey: 'user_id' }); //without otherKey, the table had chat_id and UserId, strangely
     Chat.hasMany(models.Message, { foreignKey: 'chat_id'});
-    Chat.belongsTo(models.User, { foreignKey: 'creator_id'});
 };
 
 module.exports = { Chat };
