@@ -37,6 +37,10 @@ const HomePage = () => {
           console.log('response is: ', res)
           if (res.error) {
             alert(res.error);
+            if (res.data === 'ExpiredToken') {
+              alert("Please log in again")
+              user.logOut()
+            }
             return;
           }
           if (res.success) {

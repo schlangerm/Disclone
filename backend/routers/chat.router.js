@@ -115,9 +115,7 @@ async function setupChatRoutes(app) {
         }
 
         try {
-            console.log("\nuserarray: ", userArray);
-            const creatorId = userArray.shift()
-            console.log("\nuserarray after shift: ", userArray);
+            const creatorId = req.user.id; //untested
             const newChat = await models.Chat.create({ 
                 name: chatName
             });
@@ -127,7 +125,7 @@ async function setupChatRoutes(app) {
             await newChat.addUser(creator, { through: { is_owner: true }});
             
             const members = await models.User.findAll({
-                where: { id: userArray }
+                where: { email: userArray }
             });
 
             await newChat.addUsers(members);
