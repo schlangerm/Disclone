@@ -60,3 +60,10 @@
         - Set up scrolldown for new messages
         Next up!
         - Websockets to have true real-time chats :D
+
+7/5 -   - Fixed an issue where users were not logged out with an expired JWT
+        - tuned chat post logic on backend
+        - added delete operation to chat api
+        - added delete chat functionality to frontend UI
+        - cleaned up chat creation modal css in frontend
+        - cleaned up mainbody css in frontend, added css for delete button

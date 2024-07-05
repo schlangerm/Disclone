@@ -55,7 +55,7 @@ async function main() {
                     return res.status(401).json({
                         success: false,
                         error: 'Unauthorized',
-                        data: null
+                        data: 'ExpiredToken'
                     }); 
                 }
                 const userIdFromJWT = payload.id;

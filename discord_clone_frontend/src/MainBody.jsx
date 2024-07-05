@@ -36,6 +36,32 @@ const MainBody = ({ activeChatroom }) => {
       setMessage("");
     }
 
+    const onDeleteChat = async () => { // api call
+      const response = await fetch(`${backendURL}/api/chat?id=${activeChatroom.id}`, {
+        method: 'delete',
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer: ${user?.token}`
+        }
+      });
+      const res = await response.json();
+      console.log(`response: ${res}`);
+      if (res.success) {
+        alert('Chat deleted successfully');
+      } else {
+        alert('Failed to delete chat');
+      }
+    };
+
+    const handleDeleteChat = () => {
+      const confirmDelete = window.confirm("Are you sure you want to delete this chat? Only the chat creator can delete the chat")
+      if (confirmDelete) {
+        onDeleteChat()
+      } else {
+        return;
+      }
+    }
+
     const scrollToBottom = () => {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
@@ -46,7 +72,12 @@ const MainBody = ({ activeChatroom }) => {
 
     return (
       <div className="main-body">
-        <h4>{activeChatroom.name}</h4>
+        <div className="chat-header">
+          <h4>{activeChatroom.name}</h4>
+          <button className="delete-chat-button" onClick={handleDeleteChat}>
+            Delete Chat
+          </button>
+        </div>
         <div className="messages">
           {activeChatroom.Messages
             .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)) //ascending order

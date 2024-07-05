@@ -3,3 +3,23 @@
     flex: 3;
     padding: 20px;
 }
+
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.delete-chat-button {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.delete-chat-button:hover {
+    background-color: #c0392b;
+}
