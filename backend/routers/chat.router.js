@@ -102,11 +102,11 @@ async function setupChatRoutes(app) {
     app.post('/api/chat', async (req, res) => { 
         //take userid array (creator and added), initial message, creates a chat
         const chatName = req.query.name;
-        const userArray = req.body.userArray; //make sure userArray[0] is creator (maybe the req.user.id?)
+        const userArray = req.body.userArray; 
         const initialMessage = req.body.initialMessage;
-        
-        //UNTESTED CODE BELOW
-        if (!userArray || !initialMessage) {
+
+        // 2 users min, initial message, chat name required
+        if (!userArray || !initialMessage || !chatName) {
             return res.status(400).json({
                 success: false,
                 error: "Bad request",
@@ -115,7 +115,7 @@ async function setupChatRoutes(app) {
         }
 
         try {
-            const creatorId = req.user.id; //untested
+            const creatorId = req.user.id; 
             const newChat = await models.Chat.create({ 
                 name: chatName
             });
@@ -149,6 +149,56 @@ async function setupChatRoutes(app) {
             });
         } catch (error) {
             console.error("Error creating new chat: ", error);
+            res.status(500).json({
+                success: false,
+                error: "Internal server error",
+                data: null
+            });
+        }
+    });
+
+    app.delete('/api/chat', async (req, res) => {
+        const chatId = req.query.id;
+        const userId = req.user.id;
+
+        // user must be the owner - db check
+        try {
+            owner = await models.User_Chat.findOne({
+                where: { user_id: userId }
+            });
+
+            console.log("owner claim: ", owner)
+            if (!owner.is_owner) {
+                return res.status(403).json({
+                    success: false,
+                    error: "Forbidden",
+                    data: null
+                });
+            }
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                success: false,
+                error: "Internal server error",
+                data: null
+            })
+        }
+        try {
+            await models.Chat.destroy({
+                where: { id: chatId }
+            });
+
+            console.log(`Chat of ID ${chatId} destroyed by ${userId}`);
+            res.status(200).json({
+                success: true,
+                error: null,
+                data: {
+                    results: `${chatId} destroyed`
+                }
+            });
+
+        } catch (error) {
+            console.log(error);
             res.status(500).json({
                 success: false,
                 error: "Internal server error",
