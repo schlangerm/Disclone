@@ -10,13 +10,11 @@ import URLProvider from './hooks/URLProvider.jsx';
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <URLProvider>
-        <AuthProvider>
-          <App/>
-        </AuthProvider>
-      </URLProvider>
-    </BrowserRouter>
-  </React.StrictMode>
+  <BrowserRouter>
+    <URLProvider>
+      <AuthProvider>
+        <App/>
+      </AuthProvider>
+    </URLProvider>
+  </BrowserRouter>
 )
