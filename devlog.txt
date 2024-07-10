@@ -67,3 +67,8 @@
         - added delete chat functionality to frontend UI
         - cleaned up chat creation modal css in frontend
         - cleaned up mainbody css in frontend, added css for delete button
+
+7/8 -   Reading up on and working on implementing Socket.io websockets
+
+7/9 -   Set up some elementary websockets, current issues: active chat doesn't switch on clicking on a new chat,
+        any msg sent sends 5 times.

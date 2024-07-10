@@ -1,7 +1,7 @@
-import React, { useEffect, useRef } from 'react';
-import { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useURL } from './hooks/URLProvider.jsx';
 import { useAuth } from './hooks/AuthProvider.jsx';
+import io from 'socket.io-client';
 
 import './css/main_body.css'
 import './css/globals.css';
@@ -9,31 +9,62 @@ import './css/globals.css';
 
 const MainBody = ({ activeChatroom }) => {
     const [message, setMessage] = useState("");
+    const [messages, setMessages] = useState(activeChatroom.Messages);
     const { backendURL } = useURL()
     const user = useAuth()
     const messagesEndRef = useRef(null);
+    const socket = useRef(null);
+
+    // when URL or user token changes
+    useEffect(() => {
+
+      socket.current = io(backendURL);
+
+      socket.current.on('connect', () => {
+        console.log('Connected to server, may not be authenticated');
+        socket.current.emit('authenticate', {token: user.token})
+      });
+
+      socket.current.on('inc-message-object', (msgObj) => {
+        setMessages((prevMsgs) => [...prevMsgs, msgObj]);
+      });
+
+      return () => {
+        // on component unmount
+        socket.current.off('connect');
+        socket.current.off('inc-message-object');
+        socket.current.disconnect();
+      };
+    }, [backendURL, user.token]);
+
+  // When chatroom changes: 
+  useEffect(() => {
+    if (activeChatroom && activeChatroom.id) {
+      socket.current.emit('joinRoom', activeChatroom.id)
+
+      setMessages(activeChatroom.Messages);
+      
+      return () => {
+        // on component unmount
+        socket.current.emit('leaveRoom', activeChatroom.id);
+      };
+    }
+  }, [activeChatroom]);
+
+
 
     const onMessageSend = async (message, activeChatroomId ) => { // api call
       // TODO:
       //        Update chatroom or otherwise provide feedback with new message in chat - websocket!
-      const response = await fetch(`${backendURL}/api/message`, {
-        method: 'post',
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer: ${user?.token}`
-        },
-        body: JSON.stringify({
-          message: message,
-          chatroomId: activeChatroomId
-        })
-      }); // TODO: need to add message type, etc in there at some point
-      //console.log("\n response is: ", response)
-      const res = await response.json();
-      if (res.success) {
-        console.log("response: ", res)
-        alert('Message sent successfully');
+      const msgObj = {
+        content: message,
+        type: 'text', 
+        sender_id: user.user.id,
+        chat_id: activeChatroomId
       }
-      setMessage("");
+      console.log(msgObj);
+      socket.current.emit('sent-message-object', { msgObj, to: activeChatroomId });
+      setMessage(""); // TODO implement other types of messages
     }
 
     const onDeleteChat = async () => { // api call
@@ -57,10 +88,8 @@ const MainBody = ({ activeChatroom }) => {
       const confirmDelete = window.confirm("Are you sure you want to delete this chat? Only the chat creator can delete the chat")
       if (confirmDelete) {
         onDeleteChat()
-      } else {
-        return;
       }
-    }
+    };
 
     const scrollToBottom = () => {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -68,7 +97,7 @@ const MainBody = ({ activeChatroom }) => {
 
     useEffect(() => {
       scrollToBottom();
-    }, [activeChatroom.Messages]); // will scroll down when that array changes
+    }, [messages]); // will scroll down when that array changes
 
     return (
       <div className="main-body">
@@ -79,14 +108,14 @@ const MainBody = ({ activeChatroom }) => {
           </button>
         </div>
         <div className="messages">
-          {activeChatroom.Messages
+          {messages
             .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)) //ascending order
             .map((message) => (
               <div key={message.id} className="message">
                 <div>
                   {" "}
                   {
-                    activeChatroom.Users.find((user) => user.id === message.sender_id) //up to button seems done?
+                    activeChatroom.Users.find((user) => user.id === message.sender_id) 
                       .email
                   }{" "}
                 </div>
@@ -114,6 +143,6 @@ const MainBody = ({ activeChatroom }) => {
         </div>
       </div>
     );
-}
+};
 
 export default MainBody;

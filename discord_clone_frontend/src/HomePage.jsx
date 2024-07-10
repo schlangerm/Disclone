@@ -11,8 +11,6 @@ import './css/homepage.css';
 
 
 const HomePage = () => {
-  //TODO: get chatrooms from api
-  //      import user context here for email and check auth DONE
     const [activeChatroom, setActiveChatroom] = useState(null);
     const [chatrooms, setChatrooms] = useState([]);
     const [loading, setLoading] = useState(true);

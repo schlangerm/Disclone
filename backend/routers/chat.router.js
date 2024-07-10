@@ -61,8 +61,18 @@ async function setupChatRoutes(app) {
 
             const chatMessagesUsers = await models.Chat.findOne({ 
                 where: { id: chatId }, 
-                include: [Message, User] 
+                include: [
+                    {
+                        model: models.Message
+                    },
+                    {
+                        model: models.User,
+                        attributes: { exclude: 'password' },
+                        through: { attributes: [] }
+                    }
+                ]
             });
+            // The below will need to be reviewed for use case- is this for all users to access? who is going to call this route?
             if (chatMessagesUsers) {
                 const userInChatBool = chatMessagesUsers.Users.some(user => user.id === requestingUserId)
                 //is capitalization important above? we will find out
@@ -161,10 +171,11 @@ async function setupChatRoutes(app) {
         const chatId = req.query.id;
         const userId = req.user.id;
 
-        // user must be the owner - db check
+        // user must be the owner - db check 
+        // TODO: handle admin access
         try {
             owner = await models.User_Chat.findOne({
-                where: { user_id: userId }
+                where: { user_id: userId, chat_id: chatId } 
             });
 
             console.log("owner claim: ", owner)
