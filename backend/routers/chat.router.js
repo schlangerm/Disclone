@@ -168,6 +168,7 @@ async function setupChatRoutes(app) {
     });
 
     app.delete('/api/chat', async (req, res) => {
+        console.log('\nquery id: ', req.query.id);
         const chatId = req.query.id;
         const userId = req.user.id;
 

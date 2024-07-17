@@ -4,14 +4,7 @@
     height: 100vh;
 }
 
-/* took out .mainbody and put in main_body.css */
-
 .main-content-wrapper {
     display: flex;
     flex: 1;
-}
-
-.top-header {
-    text-align: center;
-    width: 100%;
 }

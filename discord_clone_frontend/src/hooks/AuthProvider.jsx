@@ -6,7 +6,9 @@ import { jwtDecode } from "jwt-decode";
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
+    const [email, setEmail] = useState(null);
+    const [id, setId] = useState(null);
+    const [name, setName] = useState(null);
     const [token, setToken] = useState(localStorage.getItem("AuthToken"));
     const navigate = useNavigate();
     const { backendURL } = useURL();
@@ -18,7 +20,9 @@ const AuthProvider = ({ children }) => {
             try {
                 //console.log("Theres a token :)")
                 const decoded = jwtDecode(token);
-                setUser(decoded);
+                setEmail(decoded.email);
+                setId(decoded.id)
+                setName(decoded.name)
             } catch (error) {
                 console.error(error);
                 localStorage.removeItem('AuthToken');
@@ -43,7 +47,9 @@ const AuthProvider = ({ children }) => {
                 return;
             }
             if (res.data.user) {
-                setUser(res.data.user);
+                setEmail(res.data.user.email);
+                setId(res.data.user.id)
+                setName(res.data.user.name)
                 console.log('resdatauser exists!', res.data.user)
                 setToken(res.data.token);
                 localStorage.setItem("AuthToken", res.data.token);
@@ -74,7 +80,9 @@ const AuthProvider = ({ children }) => {
             });
             const res = await response.json();
             if (res.success) {
-                setUser(res.data.user);
+                setEmail(res.data.user.email);
+                setId(res.data.user.id);
+                setName(res.data.user.name);
                 setToken(res.data.token);
                 navigate('/');
                 return;
@@ -86,7 +94,9 @@ const AuthProvider = ({ children }) => {
     };
 
     const logOut = () => {
-        setUser(null);
+        setEmail(null);
+        setId(null);
+        setName(null);
         setToken("");
         localStorage.removeItem("AuthToken");
         navigate("/login");
@@ -94,7 +104,7 @@ const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value = {{ token, user, loginAction, logOut, registerAction }}>
+        <AuthContext.Provider value = {{ token, email, id, name, loginAction, logOut, registerAction }}>
             {children}
         </AuthContext.Provider>
     );

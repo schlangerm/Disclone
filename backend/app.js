@@ -4,11 +4,13 @@ const cors = require('cors');
 const dbconfig = require('./db/config/db');
 const dotenv = require('dotenv');
 const setupChatRoutes = require('./routers/chat.router');
+const setupUserRoutes = require('./routers/user.router');
 const setupSocketHandlers = require('./sockets/socketHandlers');
 const models = require('./db/models');
 const { sq } = require('./db/config/db');
 const { createServer } = require('node:http');
 const { Server } = require('socket.io');
+
 
 
 dotenv.config();
@@ -27,17 +29,15 @@ async function main() {
 
     await dbconfig.testDbConnection()
 
-    // app.use(cors()); //change if ever in production //
-
     app.use(cors({
        origin: 'http://localhost:5173',
-       methods: ['GET', 'POST']          
+       methods: ['GET', 'POST', 'PUT', 'DELETE']          
     }));                            
 
     
     console.log('\nsync starting');
     sq.sync().then(() => {
-        console.log("All models synced, NOT rewritten");
+        console.log("All models synced");
     }).catch(error => {
         console.error("Error syncing models:", error);
     });
@@ -63,8 +63,20 @@ async function main() {
                     }); 
                 }
                 const userIdFromJWT = payload.id;
-                const dbUser = await models.User.findByPk(userIdFromJWT); //this will need to be error handled im sure
-                req.user = dbUser;
+                try {
+                    const dbUser = await models.User.findByPk(userIdFromJWT); //this will need to be error handled im sure
+                    req.user = dbUser;
+                    //console.log("api access by user", dbUser)
+                    if (!dbUser) {
+                        return res.status(401).json({
+                            success: false,
+                            error: 'Unauthorized',
+                            data: null
+                        });
+                    }
+                } catch (error) {
+                    console.log("error in auth middleware", error);
+                }
                 next()
                 
             });
@@ -80,6 +92,8 @@ async function main() {
     app.use('/api', isAuthenticated)
 
     setupChatRoutes(app);
+
+    setupUserRoutes(app);
 
     app.post('/api/message', async (req, res) => {
         console.log("user: ", req.user, "requesting to send a message to chatroom ", req.body.chatroomId); //make it so: req.body.chatroomId
@@ -156,31 +170,7 @@ async function main() {
         });
     });
 
-    app.get('/api/notifications', (req, res) => {
-        console.log("user: ", req.user, "requesting notifications");
-
-        //db call to get notifications the user is connected to (through uuid)
-
-        res.status(200).json({
-            success: true,
-            error: null,
-            data: {
-                results: notifications
-            },
-        });
-    });
-
-    //user settings and profile page
-
-    //it might make sense to structure everything that needs user db info to go through one path, but it might also
-    //reveal too much about the db? check
-
-    //handled by the /api middleware, so /api/notifications, /api/chatrooms, etc are covered
-
-    //query params for search=?term / search params
-    // express request query params
-
-    //list endpoint, get specific endpoint, 
+    
 
 
 
@@ -191,20 +181,21 @@ async function main() {
             const user = await models.User.findOne({ where: { email: user_json.email } });
             console.log("login request from user: ", user, "id: ", user?.id);
             if (user && user.authenticate(user_json.password)){
-                // sign jwt here
                 const token = jwt.sign(
                     { 
                         id: user.id,
-                        email: user.email }, SECRETKEY, { expiresIn: '8h' } 
+                        email: user.email,
+                        name: user.name }, SECRETKEY, { expiresIn: '8h' } 
                 );
 
                 res.status(200).json({
                     success: true,
                     error: null,
-                    data: { // POTENTIAL ISSUE - PUT USER OBJ INSIDE DATA
+                    data: {
                         user: {
                             id: user.id,
                             email: user.email,
+                            name: user.name
                         },
                         token: token
                     },
@@ -226,8 +217,7 @@ async function main() {
         }
     });
 
-    app.post('/auth/register', async (req, res) => { //App called Postman to check
-        // TOCHECK TODO: integrate jwt tokens here 
+    app.post('/auth/register', async (req, res) => { 
         try {
             if (!req.body.email || !req.body.password) {
                 res.json({
@@ -250,7 +240,8 @@ async function main() {
                 const token = jwt.sign(
                     { 
                         id: new_user.id,
-                        email: new_user.email }, SECRETKEY, { expiresIn: '8h' } 
+                        email: new_user.email, 
+                        name: new_user.name }, SECRETKEY, { expiresIn: '8h' } 
                 );
                 res.status(200).json({
                     success: true,
@@ -260,6 +251,7 @@ async function main() {
                         user: {
                             id: new_user.id,
                             email: new_user.email,
+                            name: new_user.name
                         },
                         token: token
 
