@@ -1,8 +1,8 @@
 # ignore all packages in backend
 backend/node_modules
 
-# ignore dotenv
-*.env
-
 # ignore all packages in frontend
 discord_clone_frontend/node_modules
+
+# ignore dotenv
+*.env

@@ -17,6 +17,12 @@ const User = sq.define("User", {
         },
         unique: true //TODO: deal with back and frontend for when returns SequalizeUniqueConstraintError (email already exists)
     },
+    name: {
+        type: DataTypes.STRING,
+        defaultValue: null,
+        allowNull: true,
+        unique: true //TODO: same as above
+    },
     password: {
         type: DataTypes.STRING,
         allowNull: false,

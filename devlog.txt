@@ -48,8 +48,8 @@
 
 6/30 -  Wrote up a StackOverflow question about the sequelize query issues. Going with a raw sql query in the meantime.
 
-7/1 -   StackOverflow didn't get any bites, but using a double one-many relationship from users and chats to users_chats instead of the many-many with users_chats as the junction model has allowed me to skirt that
-        weird sq error! I'm so pleased. Now it's frontend time.
+7/1 -   StackOverflow didn't get any bites, but using a double one-many relationship from users and chats to users_chats instead of the many-many with users_chats as the 
+        junction model has allowed me to skirt that weird sq error! I'm so pleased. Now it's frontend time.
 
 7/2 -   - Tuned chat routes to put exactly what the frontend needs in response
         - Switched sync to no longer force, the db is not being changed so much that it needs to be recreated every time anymore
@@ -72,3 +72,30 @@
 
 7/9 -   Set up some elementary websockets, current issues: active chat doesn't switch on clicking on a new chat,
         any msg sent sends 5 times.
+
+7/10 -  Websockets are implemented! :D 
+        - COMMIT & MERGE - websocket implementation
+
+7/15 -  Starting work on a settings page made me want to modularize the current MainBody, LeftNavbar, and TopNavbar components, so I worked on that for most of today.
+        I got it working on the chatroom side of things, but didn't quite get around to implementing settings. My idea is to make the components take a json and
+        display info from it, just like with chatrooms. I need to really think about whether that's effective design, though, or if I'm just trying to fit a square
+        peg in a circle-shaped hole before I commit this. 
+
+7/16 -  Frontend: set up settings page, tied to backend; not finished with modularization refactor. 
+        Backend: wrote delete account, change display name endpoints in user router (added name column to user table)
+        todo -  render display name
+                figure out this whole array of components passed as props idea to fully modularize the navbar
+                look into merging settingspage and homepage
+                take a second look at websockets for channels
+
+7/17 -  Rendered display name, atm requires user to relogin so token changes for display name to reflect.
+        - COMMIT - 
+                - Edited gitignore
+                Backend:
+                - delete account, change display name endpoints
+                - name column added to users table
+                - some light error handling in auth middleware
+                Front:
+                - added settings page, using same components as homepage
+                - modularized components for use in multiple scenarios (unfinished)
+                - added a top navbar component instead of it being rendered in parent component

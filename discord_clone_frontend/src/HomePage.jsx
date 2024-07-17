@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useState } from 'react';
 import MainBody from './MainBody.jsx'
 import LeftNavbar from './LeftNavbar.jsx'
+import TopNavbar from './TopNavbar.jsx';
 import { useAuth } from './hooks/AuthProvider';
 import { useURL } from './hooks/URLProvider.jsx';
 
@@ -14,11 +15,11 @@ const HomePage = () => {
     const [activeChatroom, setActiveChatroom] = useState(null);
     const [chatrooms, setChatrooms] = useState([]);
     const [loading, setLoading] = useState(true);
-    const user = useAuth()
-    const { backendURL } = useURL()
-    console.log("!! user:", user)
-    //console.log("!!! email:", user.user.email)
-    const email = user?.user?.email;
+    const user = useAuth();
+    const { backendURL } = useURL();
+    console.log("!! user:", user);
+    //console.log("!!! email:", user.email)
+    const email = user?.email;
 
     useEffect(() => {
       const fetchChatrooms = async () => { // api call
@@ -42,9 +43,14 @@ const HomePage = () => {
             return;
           }
           if (res.success) {
-            const chatrooms = res.data.results
-            console.log('chatrooms received: ', chatrooms)
-            setChatrooms(chatrooms);
+            const chatroomsArray = res.data.results
+            console.log('chatrooms received: ', chatroomsArray)
+            // add the chatroom type
+            const updatedChatroomsArray = chatroomsArray.map(element => {
+              return { ...element, type: "Chatrooms"};
+            })
+            console.log('chatrooms updated: ', updatedChatroomsArray)
+            setChatrooms(updatedChatroomsArray);
             setLoading(false);
           }
         } catch (err) {
@@ -56,32 +62,22 @@ const HomePage = () => {
     }, [backendURL, user?.token]);
 
     const onSelectChatroom = async (chatroom) => { 
-      // Works
       setActiveChatroom(chatroom);
     };
 
     console.log("homepage email received: ", email);
     return (
       <div className="homepage">
-        <header className="top-header">
-          <div className="user-email">{email}</div>
-          <div className='logout-button'>
-            <button
-              children="Logout"
-              onClick={(event) => {
-                user.logOut()
-              }}/>
-          </div>
-        </header>
+        <TopNavbar/>
         <div className='main-content-wrapper'>
           {loading ? (
             <p>Loading chatrooms...</p>
           ) : (
             <LeftNavbar 
-              chatrooms={chatrooms}  // Works
-              onSelectChatroom={onSelectChatroom} />
+              contentArray={chatrooms}  
+              onSelectElement={onSelectChatroom} />
           )}
-          {activeChatroom && <MainBody activeChatroom={activeChatroom} />}
+          {activeChatroom && <MainBody activeElement={activeChatroom} />}
         </div>
       </div>
     );

@@ -4,6 +4,7 @@ import LoginPage from './LoginPage.jsx';
 import HomePage from './HomePage.jsx';
 import PrivateRoute from './router/PrivateRoute';
 import RegisterPage from './RegisterPage.jsx';
+import SettingsPage from './SettingsPage.jsx';
 
 import './css/globals.css'
 
@@ -18,6 +19,7 @@ const App = () => {
       <Route element={<PrivateRoute />}>
         <Route path ="/" element={<Navigate to = "/home"/>}/>
         <Route path ="/home" element={<HomePage/>}/>
+        <Route path ="/settings" element={<SettingsPage/>}/>
       </Route>
     </Routes>
   );

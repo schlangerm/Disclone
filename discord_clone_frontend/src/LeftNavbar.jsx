@@ -1,11 +1,22 @@
 import React, { useState } from 'react';
+import ChatFormModal from './modals/ChatFormModal';
 
 import './css/globals.css';
 import './css/left_navbar.css';
-import ChatFormModal from './modals/ChatFormModal';
 
-const LeftNavbar = ({ chatrooms = [], onSelectChatroom }) => {
+
+const componentMapping = {
+  Chatrooms: ChatFormModal,
+  Settings: ChatFormModal, // TODO change
+};
+
+const LeftNavbar = ({ contentArray = [], onSelectElement }) => {
+    let Component = ChatFormModal
     const [isModalOpen, setModalOpen] = useState(false);
+    
+    if (contentArray.length) { 
+      Component = componentMapping[contentArray[0].type];
+    }
     
     const openModal = () => {
       setModalOpen(true);
@@ -18,22 +29,24 @@ const LeftNavbar = ({ chatrooms = [], onSelectChatroom }) => {
 
     return (
         <div className="left-navbar">
-          <h3>Chatrooms</h3>
-          {Array.isArray(chatrooms) && chatrooms.length > 0 ? (
-            <ul>
-              {chatrooms.map((chatroom) => ( //TODO: this currently throws an error if chatroomsGet fails as chatrooms is not an array, should fix that
-                <li key={chatroom.id} onClick={() => onSelectChatroom(chatroom)}>
-                  {chatroom.name}
-                </li>
-              ))}
-            </ul>
+          {Array.isArray(contentArray) && contentArray.length > 0 ? (
+            <>
+              <h3>{contentArray[0].type}</h3>
+              <ul>
+                {contentArray.map((element) => ( 
+                  <li key={element.id} onClick={() => onSelectElement(element)}>
+                    {element.name}
+                  </li>
+                ))}
+              </ul>
+            </>
           ) : (
-              <p>No chatrooms available</p>
+              <p>No content available</p>
           )}
           <div className='left-navbar-actions'>
-            <ChatFormModal isOpen={isModalOpen} onRequestClose={closeModal} />
+            <Component isOpen={isModalOpen} onRequestClose={closeModal} />
             <button
-              className='open-chat-form-button'
+              className='open-modal-button'
               onClick={openModal}
             >
               +
