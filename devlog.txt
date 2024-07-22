@@ -98,4 +98,9 @@
                 Front:
                 - added settings page, using same components as homepage
                 - modularized components for use in multiple scenarios (unfinished)
-                - added a top navbar component instead of it being rendered in parent component
+                - added a top navbar component
+
+7/18 -  Worked towards modularization of components
+
+7/22 -  Added brief setup instructions in readme, made a sliding panel component to show members in chats
+        Committed the readme changes
