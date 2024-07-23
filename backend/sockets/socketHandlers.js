@@ -6,6 +6,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const SECRETKEY = process.env.SECRETKEY;
+const MAX_MSG_LENGTH = 1250;
 
 
 module.exports = (io) => {
@@ -20,10 +21,10 @@ module.exports = (io) => {
                     console.log("Authenticated socket ", socket.id);
                     socket.auth = payload;
 
-                    _.each(io.nsps, (nsp) => { // iterates over all namespaces in io obj
+                    _.each(io.nsps, (nsp) => { // iterate over all namespaces in io obj
                         if (nsp.sockets[socket.id]) { // check if socket is part of namespace's sockets
                             console.log("restoring socket to ", nsp.name);
-                            nsp.connected[socket.id] = socket; // restores socket
+                            nsp.connected[socket.id] = socket; // restore socket
                         }
                     });
                 } else {
@@ -51,6 +52,13 @@ module.exports = (io) => {
         socket.on('sent-message-object', async ({ msgObj, to }) => {
             // put msgObj into db, emit it to everyone else in room
             console.log("\n\n msgobj: ", msgObj);
+            if (msgObj.content.length > MAX_MSG_LENGTH) {
+                socket.emit('message-error', {
+                    error: `Message exceeds the maximum allowed length of ${MAX_MESSAGE_LENGTH} characters.`
+                });
+                return;
+                
+            }
             try {
                 const dbmessage = await models.Message.create({ 
                     content: msgObj.content, 
@@ -63,6 +71,9 @@ module.exports = (io) => {
                 console.log('message sent to frontend');
             } catch (error) {
                 console.log(error)
+                socket.emit('message-error', {
+                    error: 'Failed to send the message due to an internal error.'
+                });
                 // maybe return here or otherwise stop operations?
             }
         });

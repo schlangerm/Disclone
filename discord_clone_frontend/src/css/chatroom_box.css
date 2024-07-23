@@ -4,6 +4,26 @@
     padding: 20px;
 }
 
+.chatroom-box.shifted {
+    margin-right: 300px;
+}
+
+.chat-content-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.chat-messages-wrapper {
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+    flex: 1
+}
+
+.member-panel-wrapper {
+    flex: 1
+}
+
 .chat-header {
     display: flex;
     justify-content: space-between;

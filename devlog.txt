@@ -104,3 +104,9 @@
 
 7/22 -  Added brief setup instructions in readme, made a sliding panel component to show members in chats
         Committed the readme changes
+
+7/23 -  Changed max msg length to 1250 characters, added error handling so user is informed when this
+        constraint is broken
+        Tuned sliding member panel to stay inside its container
+        Added a back button to navigate to the previous page user was on
+        Fixed a small bug in the new profile settings component
