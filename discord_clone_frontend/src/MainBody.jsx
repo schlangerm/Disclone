@@ -13,7 +13,7 @@ const componentMapping = {
 
 const MainBody = ({ activeElement }) => {
   const Component = componentMapping[activeElement?.type];
-
+  console.log("type: ", activeElement?.type);
     return (
       <div className='main-body'>
         {Component ? (

@@ -29,7 +29,6 @@ async function setupChatRoutes(app) {
         });
         console.log('the chat rows are: ', userChats)
         //db call to get the chatrooms
-        //get just name, id, avatar pic or something
         const chatrooms = userChats.Chats
         console.log("chatrooms: ", chatrooms)
 
@@ -46,7 +45,7 @@ async function setupChatRoutes(app) {
     );
 
     app.get('/api/chat', async (req, res) => { //Before testing: go to frontend and call this route
-        //responds a chatroom and its messages and users added given a chatroom id, attempts to check if user is part of chat
+        //responds a chatroom and its messages and users added given a chatroom id, checks if user is part of chat
         if (!req.query?.id) {
             return res.status(400).json({
                 success: false,
@@ -75,7 +74,6 @@ async function setupChatRoutes(app) {
             // The below will need to be reviewed for use case- is this for all users to access? who is going to call this route?
             if (chatMessagesUsers) {
                 const userInChatBool = chatMessagesUsers.Users.some(user => user.id === requestingUserId)
-                //is capitalization important above? we will find out
 
                 if (!userInChatBool) {
                     return res.status(403).json({

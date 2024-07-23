@@ -5,16 +5,22 @@ import io from 'socket.io-client';
 
 import './css/chatroom_box.css'
 import './css/globals.css';
+import SlidingPanel from './SlidingPanel.jsx';
 
 
 const ChatroomBox = ({ activeElement }) => {
     const activeChatroom = activeElement;
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState(activeChatroom.Messages);
+    const [memberPanelOpen, setMemberPanelOpen] = useState(false);
     const { backendURL } = useURL()
     const user = useAuth()
     const messagesEndRef = useRef(null);
     const socket = useRef(null);
+
+    const MAX_MSG_LENGTH = 1250;
+
+    const members = activeChatroom.Users
 
     // when URL or user token changes
     useEffect(() => {
@@ -30,6 +36,10 @@ const ChatroomBox = ({ activeElement }) => {
         setMessages((prevMsgs) => [...prevMsgs, msgObj]);
       });
 
+      socket.current.on('message-error', (data) => {
+        alert(data.error);
+      })
+
       return () => {
         // on component unmount
         socket.current.off('connect');
@@ -38,23 +48,28 @@ const ChatroomBox = ({ activeElement }) => {
       };
     }, [backendURL, user.token]);
 
-  // When chatroom changes: 
-  useEffect(() => {
-    if (activeChatroom && activeChatroom.id) {
-      socket.current.emit('joinRoom', activeChatroom.id)
+    // When chatroom changes: 
+    useEffect(() => {
+      if (activeChatroom && activeChatroom.id) {
+        socket.current.emit('joinRoom', activeChatroom.id)
 
-      setMessages(activeChatroom.Messages);
-      
-      return () => {
-        // on component unmount
-        socket.current.emit('leaveRoom', activeChatroom.id);
-      };
+        setMessages(activeChatroom.Messages);
+        
+        return () => {
+          // on component unmount
+          socket.current.emit('leaveRoom', activeChatroom.id);
+        };
+      }
+    }, [activeChatroom]);
+
+    const toggleMemberPanel = () => {
+      setMemberPanelOpen(!memberPanelOpen);
     }
-  }, [activeChatroom]);
-
-
 
     const onMessageSend = async (message, activeChatroomId ) => { // socket connection
+      if (message.length > MAX_MSG_LENGTH) {
+        alert(`Messages must be less than ${MAX_MSG_LENGTH} characters`)
+      }
       const msgObj = {
         content: message,
         type: 'text', 
@@ -99,52 +114,62 @@ const ChatroomBox = ({ activeElement }) => {
     }, [messages]); // will scroll down when that array changes
 
     return (
-      <div className="chatroom-box">
+      <div className={`chatroom-box ${memberPanelOpen ? 'shfited' : ''}`}>
         <div className="chat-header">
           <h4>{activeChatroom.name}</h4>
           <button className="delete-chat-button" onClick={handleDeleteChat}>
             Delete Chat
           </button>
+          <button className="member-panel-button" onClick={toggleMemberPanel}>
+            Members
+          </button>
         </div>
-        <div className="messages">
-          {messages
-            .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)) //ascending order
-            .map((message, index, array) => {
-              const previousMessage = array[index - 1];
-              const showName = !previousMessage || previousMessage.sender_id !== message.sender_id;
-              return (
-                <div key={message.id} className="message">
-                  {showName && (
-                    <div className='sender-name'>
-                      {
-                        (() => {
-                          let user = activeChatroom.Users.find((user) => user.id === message.sender_id) 
-                          return user.name ? user.name : user.email;
-                        })()
-                      }
+        <div className='chat-content-container'>
+          <div className='chat-messages-wrapper'>
+            <div className="messages">
+              {messages
+                .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)) //ascending order
+                .map((message, index, array) => {
+                  const previousMessage = array[index - 1];
+                  const showName = !previousMessage || previousMessage.sender_id !== message.sender_id;
+                  return (
+                    <div key={message.id} className="message">
+                      {showName && (
+                        <div className='sender-name'>
+                          {
+                            (() => {
+                              let user = activeChatroom.Users.find((user) => user.id === message.sender_id) 
+                              return user.name ? user.name : user.email;
+                            })()
+                          }
+                        </div>
+                      )}
+                      <div> {message.content} </div>
+                      <div> {message.createdAt.toLocaleString()} </div> 
                     </div>
-                  )}
-                  <div> {message.content} </div>
-                  <div> {message.createdAt.toLocaleString()} </div> 
-                </div>
-              );
-          })}
-          <div ref={messagesEndRef} />
-        </div>
-        <div className="user-input">
-          <input
-            name="message"
-            value={message}
-            placeholder="Write a message..."
-            onChange={(event) => setMessage(event.target.value)}
-          />
-          <button
-            children="Submit"
-            onClick={() => {
-              console.log(message);
-              onMessageSend(message, activeChatroom.id);
-            }}
-          />
+                  );
+              })}
+              <div ref={messagesEndRef} />
+            </div>
+            <div className="user-input">
+              <input
+                name="message"
+                value={message}
+                placeholder="Write a message..."
+                onChange={(event) => setMessage(event.target.value)}
+              />
+              <button
+                children="Submit"
+                onClick={() => {
+                  console.log(message);
+                  onMessageSend(message, activeChatroom.id);
+                }}
+              />
+            </div>
+          </div>
+          <div className='member-panel-wrapper'>
+              <SlidingPanel items={members} isOpen={memberPanelOpen} />
+          </div>
         </div>
       </div>
     );

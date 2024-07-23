@@ -5,24 +5,21 @@ import { useState } from "react";
 import LeftNavbar from "./LeftNavbar";
 import MainBody from "./MainBody";
 import TopNavbar from "./TopNavbar";
+import ProfileSettings from "./settings/ProfileSettings";
 
 
 const SettingsPage = () => {
   const [activeSetting, setActiveSetting] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  //mock settings array for expansion later
   const settingsArray = [
-    {
-    type: "Settings",
-    id: "1",
-    name: "Profile"
-    }
-  ]
+    { id: 1, type: 'Settings', name: 'Profile', component: ProfileSettings }
+  ];
 
 
 
   const onSelectSetting = async (setting) => {
+      console.log("selected setting: ", setting);
       setActiveSetting(setting)
   }
 
@@ -38,7 +35,7 @@ const SettingsPage = () => {
             contentArray={settingsArray}  
             onSelectElement={onSelectSetting} />
         )}
-        {activeSetting && <MainBody activeElement={activeSetting} />}
+        {activeSetting ? <MainBody activeElement={activeSetting} /> : <p>Select a setting</p>}
       </div>
     </div>
   );

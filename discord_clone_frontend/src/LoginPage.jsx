@@ -10,7 +10,7 @@ const LoginPage = () => {
     const user = useAuth()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const { appURL } = useURL() //untested
+    const { appURL } = useURL()
 
   
     return (
@@ -37,7 +37,7 @@ const LoginPage = () => {
           </label>
           <button
             children="Submit"
-            onClick={() => { //took out event, i dont think its important
+            onClick={() => {
               if (email && password) {
                 console.log(email, password);
                 user.loginAction(
