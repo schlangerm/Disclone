@@ -1,0 +1,23 @@
+.sliding-panel {
+    position: fixed;
+    right: -250px; /* Adjust based on the width of the panel */
+    width: 250px; /* Adjust as needed */
+    background: rgb(49, 92, 92);
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+    transition: right 0.3s ease-out;
+}
+
+.sliding-panel.open {
+    right: 0;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+li {
+    padding: 15px;
+    border-bottom: 1px solid #ccc;
+}

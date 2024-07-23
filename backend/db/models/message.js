@@ -9,7 +9,7 @@ const Message = sq.define('Message', {
         allowNull: false
     },
     content: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(1250),
         allowNull: false
     },
     type: {
