@@ -1,63 +1,56 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useURL } from './hooks/URLProvider.jsx';
 import { useAuth } from './hooks/AuthProvider.jsx';
-import io from 'socket.io-client';
 
 import './css/chatroom_box.css'
 import './css/globals.css';
 import SlidingPanel from './SlidingPanel.jsx';
-
+import socket from './sockets/socket.js';
 
 const ChatroomBox = ({ activeElement }) => {
     const activeChatroom = activeElement;
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState(activeChatroom.Messages);
     const [memberPanelOpen, setMemberPanelOpen] = useState(false);
-    const { backendURL } = useURL()
+
+    const backendURL = import.meta.env.VITE_BACKEND_URL;
+
     const user = useAuth()
     const messagesEndRef = useRef(null);
-    const socket = useRef(null);
 
     const MAX_MSG_LENGTH = 1250;
 
+
     const members = activeChatroom.Users
 
-    // when URL or user token changes
+    // on component mount
     useEffect(() => {
 
-      socket.current = io(backendURL);
-
-      socket.current.on('connect', () => {
-        console.log('Connected to server, may not be authenticated');
-        socket.current.emit('authenticate', {token: user.token})
-      });
-
-      socket.current.on('inc-message-object', (msgObj) => {
+      socket.on('inc-message-object', (msgObj) => {
         setMessages((prevMsgs) => [...prevMsgs, msgObj]);
       });
 
-      socket.current.on('message-error', (data) => {
+      socket.on('message-error', (data) => {
         alert(data.error);
       })
 
       return () => {
-        // on component unmount
-        socket.current.off('connect');
-        socket.current.off('inc-message-object');
-        socket.current.disconnect();
+        // on component dismount
+        socket.off('inc-message-object');
+        socket.off('message-error');
       };
-    }, [backendURL, user.token]);
+    }, []); 
 
     // When chatroom changes: 
     useEffect(() => {
       if (activeChatroom && activeChatroom.id) {
-        socket.current.emit('joinRoom', activeChatroom.id)
+        socket.emit('joinRoom', activeChatroom.id)
+        console.log('Join room request sent');
 
         setMessages(activeChatroom.Messages);
         
         return () => {
-          // on component unmount
-          socket.current.emit('leaveRoom', activeChatroom.id);
+          // on component dismount
+          socket.emit('leaveRoom', activeChatroom.id);
         };
       }
     }, [activeChatroom]);
@@ -77,7 +70,7 @@ const ChatroomBox = ({ activeElement }) => {
         chat_id: activeChatroomId
       }
       console.log(msgObj);
-      socket.current.emit('sent-message-object', { msgObj, to: activeChatroomId });
+      socket.emit('sent-message-object', { msgObj, to: activeChatroomId });
       setMessage(""); // TODO implement other types of messages
     }
 

@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import { useURL } from '../hooks/URLProvider';
 import { useAuth } from "../hooks/AuthProvider";
 
 const ProfileSettings = () => {
     const [newName, setNewName] = useState('')
-    const { backendURL } = useURL();
+    const backendURL = import.meta.env.VITE_BACKEND_URL
     const user = useAuth()
 
     const handleNameChange = async () => { // api call

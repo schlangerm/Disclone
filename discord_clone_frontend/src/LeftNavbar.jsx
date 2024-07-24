@@ -10,6 +10,7 @@ const componentMapping = {
   Settings: ChatFormModal, // TODO change
 };
 
+//takes an array, each element needs to have .id and .name
 const LeftNavbar = ({ contentArray = [], onSelectElement }) => {
     let Component = ChatFormModal
     const [isModalOpen, setModalOpen] = useState(false);
