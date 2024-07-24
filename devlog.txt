@@ -113,4 +113,4 @@
 
 7/24 -  Switched from using context to give components the address of the app and backend to using .env 
         Reworked sockets to initialize in the App.jsx file (front) so all components can make use of sockets
-        
+    

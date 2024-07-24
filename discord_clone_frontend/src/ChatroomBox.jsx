@@ -11,11 +11,14 @@ const ChatroomBox = ({ activeElement }) => {
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState(activeChatroom.Messages);
     const [memberPanelOpen, setMemberPanelOpen] = useState(false);
+
     const backendURL = import.meta.env.VITE_BACKEND_URL;
+
     const user = useAuth()
     const messagesEndRef = useRef(null);
 
     const MAX_MSG_LENGTH = 1250;
+
 
     const members = activeChatroom.Users
 
