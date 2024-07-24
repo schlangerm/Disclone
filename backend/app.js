@@ -281,12 +281,12 @@ async function main() {
     setupSocketHandlers(io);
 
     server.listen(PORT, (error) => {
-        if (!error)
+        if (!error) {
             console.log("Server is successfully running and app is listening on port " + PORT);
-        else 
+        } else { 
             console.log("Server Error, ", error);
         }
-    );
+    });
 };
 
 main()

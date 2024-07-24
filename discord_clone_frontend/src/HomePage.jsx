@@ -4,11 +4,9 @@ import MainBody from './MainBody.jsx'
 import LeftNavbar from './LeftNavbar.jsx'
 import TopNavbar from './TopNavbar.jsx';
 import { useAuth } from './hooks/AuthProvider';
-import { useURL } from './hooks/URLProvider.jsx';
 
 import './css/globals.css';
 import './css/homepage.css';
-
 
 
 const HomePage = () => {
@@ -16,7 +14,7 @@ const HomePage = () => {
     const [chatrooms, setChatrooms] = useState([]);
     const [loading, setLoading] = useState(true);
     const user = useAuth();
-    const { backendURL } = useURL();
+    const backendURL = import.meta.env.VITE_BACKEND_URL;
     console.log("!! user:", user);
     //console.log("!!! email:", user.email)
     const email = user?.email;

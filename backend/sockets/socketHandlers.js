@@ -49,6 +49,11 @@ module.exports = (io) => {
             console.log(`socket ${socket.id} joined room ${room}`);
         });
 
+        socket.on('leaveRoom', (room) => {
+            socket.leave(room)
+            console.log(`socket ${socket.id} left room ${room}`);
+        })
+
         socket.on('sent-message-object', async ({ msgObj, to }) => {
             // put msgObj into db, emit it to everyone else in room
             console.log("\n\n msgobj: ", msgObj);

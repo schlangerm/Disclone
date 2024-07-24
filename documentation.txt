@@ -25,6 +25,7 @@ Example response from /api/chatrooms:
                     {
                         "id": "c43e11bc-f93c-4893-a62d-b03a8ac58027",
                         "email": "bleep@gmail.com",
+                        "name":"Display Name Here",
                         "createdAt": "2024-07-02T17:35:18.876Z",
                         "updatedAt": "2024-07-02T17:35:18.876Z"
                     },
@@ -56,6 +57,7 @@ Example response from /api/chatrooms:
                     {
                         "id": "c43e11bc-f93c-4893-a62d-b03a8ac58027",
                         "email": "bleep@gmail.com",
+                        "name":"Display Name Here",
                         "createdAt": "2024-07-02T17:35:18.876Z",
                         "updatedAt": "2024-07-02T17:35:18.876Z"
                     }

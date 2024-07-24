@@ -1,6 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useURL } from "./URLProvider";
 import { jwtDecode } from "jwt-decode";
 
 const AuthContext = createContext();
@@ -11,7 +10,8 @@ const AuthProvider = ({ children }) => {
     const [name, setName] = useState(null);
     const [token, setToken] = useState(localStorage.getItem("AuthToken"));
     const navigate = useNavigate();
-    const { backendURL } = useURL();
+    const backendURL = import.meta.env.VITE_BACKEND_URL;
+
 
     useEffect(() => {
         console.log("UseEffect is running");

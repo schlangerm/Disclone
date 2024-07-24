@@ -5,16 +5,15 @@ import App from './App.jsx';
 import AuthProvider from './hooks/AuthProvider';
 
 import './css/globals.css'
-import URLProvider from './hooks/URLProvider.jsx';
 
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <BrowserRouter>
-    <URLProvider>
+  <React.StrictMode>
+    <BrowserRouter>
       <AuthProvider>
         <App/>
       </AuthProvider>
-    </URLProvider>
-  </BrowserRouter>
+    </BrowserRouter>
+  </React.StrictMode>
 )

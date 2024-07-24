@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useURL } from "../hooks/URLProvider";
 import { useAuth } from "../hooks/AuthProvider";
 import Modal from 'react-modal';
 import '../css/chat_form_modal.css';
@@ -9,7 +8,7 @@ const ChatFormModal = ({ isOpen, onRequestClose }) => { //TODO: add friends-list
     const [addedUsers, setAddedUsers] = useState(['']);
     const [initialMessage, setInitialMessage] = useState(['']);
     const user = useAuth()
-    const { backendURL } = useURL()
+    const backendURL = import.meta.env.VITE_BACKEND_URL
 
     const handleAddedUsersChange = (index, event) => {
         const newAddedUsers = [...addedUsers];

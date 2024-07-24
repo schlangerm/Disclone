@@ -3,7 +3,10 @@ Practice webapp
 
 SETUP:
 
-This project uses .env variables for the JWT secret (SECRETKEY) and the database password (DBPASS)
+This project uses .env variables for: 
+the JWT secret (SECRETKEY) and the database password (DBPASS) in the backend
+backend URL (VITE_BACKEND_URL) and front end URL (VITE_FRONTEND_URL) in the front end. 
+
 
 After cloning, you will need to create a postgreSQL database. By default, it should be named 'disclone' and use port 5432 but you can rename it whatever you like, as long as you also rename it in the backend/config/db.js file.
 

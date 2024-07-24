@@ -1,16 +1,15 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { useState } from 'react';
 
 import './css/globals.css';
 import './css/login_page.css';
 import { useAuth } from './hooks/AuthProvider';
-import { useURL } from './hooks/URLProvider';
 
 const LoginPage = () => {
     const user = useAuth()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const { appURL } = useURL()
+    const appURL = import.meta.env.VITE_FRONTEND_URL
 
   
     return (
