@@ -76,7 +76,7 @@ const ChatroomBox = ({ activeElement }) => {
         method: 'delete',
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer: ${user?.token}`
+          "Authorization": `Bearer: ${user?.token}` //get token from localstorage (pass token as rarely as possible)
         }
       });
       const res = await response.json();
@@ -134,8 +134,16 @@ const ChatroomBox = ({ activeElement }) => {
                           }
                         </div>
                       )}
-                      <div> {message.content} </div>
-                      <div> {message.createdAt.toLocaleString()} </div> 
+                      <div className='message-content'> {message.content} </div>
+                      <div className='datetime'> 
+                        {new Date (message.createdAt).toLocaleString('en-US', {
+                        year: '2-digit',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: true,
+                      })} </div> 
                     </div>
                   );
               })}

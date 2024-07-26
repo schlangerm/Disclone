@@ -4,9 +4,10 @@
 import { useState } from "react";
 import LeftNavbar from "./LeftNavbar";
 import MainBody from "./MainBody";
-import TopNavbar from "./TopNavbar";
 import ProfileSettings from "./settings/ProfileSettings";
 
+import "./css/globals.css";
+import "./css/settings_page.css";
 
 const SettingsPage = () => {
   const [activeSetting, setActiveSetting] = useState(null);
@@ -26,17 +27,14 @@ const SettingsPage = () => {
 
   return (
     <div className="settings-page">
-      <TopNavbar/>
-      <div className='main-content-wrapper'>
-        {loading ? (
-          <p>Loading...</p>
-        ) : (
-          <LeftNavbar 
-            contentArray={settingsArray}  
-            onSelectElement={onSelectSetting} />
-        )}
-        {activeSetting ? <MainBody activeElement={activeSetting} /> : <p>Select a setting</p>}
-      </div>
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <LeftNavbar 
+          contentArray={settingsArray}  
+          onSelectElement={onSelectSetting} />
+      )}
+      {activeSetting ? <MainBody activeElement={activeSetting} /> : <p>Select a setting</p>}
     </div>
   );
 };

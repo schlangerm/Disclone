@@ -96,27 +96,34 @@ async function main() {
     setupUserRoutes(app);
 
     app.post('/api/message', async (req, res) => {
-        console.log("user: ", req.user, "requesting to send a message to chatroom ", req.body.chatroomId); //make it so: req.body.chatroomId
-        //take chatroom id and message text
-        message = req.body.message //make it so: req.body.message
-        messageType = 'text' //change when implementing pics etc
-        //sanitize the message
-        //send message into db
-        try {
-            dbmessage = await models.Message.create({ 
-            content: message, 
-            type: messageType,
-            sender_id: req.user.id,
-            chat_id: req.body.chatroomId })
-        } catch (error) {
-            res.status(500).json({
-                success: false,
-                error: 'Internal server error',
-                data: null
+        console.log("user: ", req.user, "requesting to send a message to chatroom ", req.body.chat_id); //deal with this on the front
+        const msgObj = req.body
+        if (msgObj.content.length > MAX_MSG_LENGTH) {
+            socket.emit('message-error', {
+                error: `Message exceeds the maximum allowed length of ${MAX_MESSAGE_LENGTH} characters.`
             });
-            console.log(error);
+            return;
+            
         }
+        try {
+            const dbmessage = await models.Message.create({ 
+                content: msgObj.content, 
+                type: msgObj.type,
+                sender_id: msgObj.sender_id,
+                chat_id: msgObj.chat_id 
+            });
 
+            io.to(to).emit('inc-message-object', dbmessage);
+            console.log('message sent to frontend');
+        } catch (error) {
+            console.log(error)
+            socket.emit('message-error', {
+                error: 'Failed to send the message due to an internal error.'
+            });
+            // maybe return here or otherwise stop operations?
+        }
+        //check out docs for what sockets is exactly
+        io.sockets.to(req.body.chatroomId).emit('inc-message-obj', dbmessage);
         res.status(200).json({
             success: true,
             error: null,

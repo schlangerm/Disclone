@@ -2,13 +2,15 @@
     position: fixed;
     right: -250px; /* Adjust based on the width of the panel */
     width: 250px; /* Adjust as needed */
-    background: rgb(49, 92, 92);
+    height: 100vh;
+    background: #2e2e2e;
     box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
     transition: right 0.3s ease-out;
 }
 
 .sliding-panel.open {
-    right: 0;
+    position: relative;
+    right: 0px;
 }
 
 ul {
