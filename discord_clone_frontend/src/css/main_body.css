@@ -2,6 +2,7 @@
     background-color: #3B3B3B;
     flex: 10;
     padding: 20px;
+    height: 80vh;
 }
 
 .chat-header {

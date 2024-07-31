@@ -103,8 +103,15 @@ async function main() {
                 error: `Message exceeds the maximum allowed length of ${MAX_MESSAGE_LENGTH} characters.`
             });
             return;
-            
         }
+
+        if (msgObj.content.trim() === '') {
+            socket.emit('message-error', {
+                error: 'Message cannot be empty'
+            });
+            return;
+        }   
+        
         try {
             const dbmessage = await models.Message.create({ 
                 content: msgObj.content, 

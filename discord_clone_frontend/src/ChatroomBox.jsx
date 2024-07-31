@@ -5,12 +5,16 @@ import './css/chatroom_box.css'
 import './css/globals.css';
 import SlidingPanel from './SlidingPanel.jsx';
 import socket from './sockets/socket.js';
+import { FaAngleDoubleDown } from "react-icons/fa";
+import { IoMdArrowRoundUp } from "react-icons/io";
+import Dropdown from './components/Dropdown.jsx';
 
 const ChatroomBox = ({ activeElement }) => {
     const activeChatroom = activeElement;
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState(activeChatroom.Messages);
     const [memberPanelOpen, setMemberPanelOpen] = useState(false);
+    const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
     const backendURL = import.meta.env.VITE_BACKEND_URL;
 
@@ -106,13 +110,29 @@ const ChatroomBox = ({ activeElement }) => {
       scrollToBottom();
     }, [messages]); // will scroll down when that array changes
 
+    const toggleChatSettings = () => {
+      setIsDropdownVisible(!isDropdownVisible);
+    }
+
     return (
       <div className={`chatroom-box ${memberPanelOpen ? 'shfited' : ''}`}>
         <div className="chat-header">
-          <h4>{activeChatroom.name}</h4>
-          <button className="delete-chat-button" onClick={handleDeleteChat}>
-            Delete Chat
-          </button>
+          <div className="chat-name-and-settings">
+            <h4>{activeChatroom.name}</h4>
+            <div className="dropdown-container">
+              <button className="chat-settings-button" onClick={toggleChatSettings}>
+                <FaAngleDoubleDown />
+              </button>
+              <Dropdown 
+                isVisible={isDropdownVisible} 
+                contentArray={[
+                  <button className="delete-chat-button" onClick={handleDeleteChat}>
+                    Delete Chat
+                  </button>
+                ]}
+              />
+            </div>
+          </div>
           <button className="member-panel-button" onClick={toggleMemberPanel}>
             Members
           </button>
@@ -160,12 +180,13 @@ const ChatroomBox = ({ activeElement }) => {
                 onChange={(event) => setMessage(event.target.value)}
               />
               <button
-                children="Submit"
                 onClick={() => {
                   console.log(message);
                   onMessageSend(message, activeChatroom.id);
                 }}
-              />
+              >
+                <IoMdArrowRoundUp />
+              </button>
             </div>
           </div>
           <div className='member-panel-wrapper'>

@@ -118,3 +118,7 @@
         with the god-ugly front pages.
         Added dashboard layout 
         Tuned member panel css to fill the height of its container and push the chat box when it opens
+
+7/29 -  Changed color scheme
+        Moved delete chat button into a chat options dropdown
+        Ongoing work on making it all prettier
