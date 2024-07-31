@@ -4,7 +4,6 @@
     align-items: center;
     padding: 0 20px;
     height: 90px;
-    border-bottom: 1px solid #ddd;
     position: relative;
 }
   
@@ -36,14 +35,6 @@
     transform: translateX(-50%); 
 }
   
-.logout-button {
-    background-color: #007bff; 
-    color: white; 
-    border: none; 
-    padding: 5px 10px; 
-    cursor: pointer; 
-    font-size: 16px; 
-}
 
 .back-button-wrapper,
 .settings-button-wrapper {
@@ -52,13 +43,20 @@
 }
   
 .back-button,
+.logout-button,
 .settings-button {
-    background-color: #007bff;
+    background-color: #3b3b3b;
     color: white;
     border: none;
     padding: 5px 10px;
     cursor: pointer;
     font-size: 16px;
+}
+
+.back-button:hover,
+.logout-button:hover,
+.settings-button:hover {
+    background-color: lightslategray;
 }
   
 .back-button {

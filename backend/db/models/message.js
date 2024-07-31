@@ -10,7 +10,12 @@ const Message = sq.define('Message', {
     },
     content: {
         type: DataTypes.STRING(1250),
-        allowNull: false
+        allowNull: false,
+        validate: {
+            notEmpty: {
+                msg: 'Content cannot be empty'
+            }
+        }
     },
     type: {
         type: DataTypes.STRING,

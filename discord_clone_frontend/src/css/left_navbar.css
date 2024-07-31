@@ -1,6 +1,5 @@
 .left-navbar {
-    flex: 0 0 auto;
-    flex-grow: 1;
+    flex: 1 0 auto;
     flex-basis: 100px;
     padding: 20px;
     min-width: 100px;

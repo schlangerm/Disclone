@@ -20,25 +20,20 @@ module.exports = (io) => {
                 if (!err) {
                     console.log("Authenticated socket ", socket.id);
                     socket.auth = payload;
-
-                    _.each(io.nsps, (nsp) => { // iterate over all namespaces in io obj
-                        if (nsp.sockets[socket.id]) { // check if socket is part of namespace's sockets
-                            console.log("restoring socket to ", nsp.name);
-                            nsp.connected[socket.id] = socket; // restore socket
-                        }
-                    });
                 } else {
-                    console.log(err);
+                    console.log(err)
+                    console.log('Disconnecting unauthenticated JWT from socket ', socket.id);
+                    socket.disconnect('unauthorized');
                 }
             });
         });
 
-        setTimeout(() => {
+        /*setTimeout(() => {
             if (!socket.auth) {
-                console.log('Disconnecting socket ', socket.id);
+                console.log('Disconnecting socket timeout ', socket.id);
                 socket.disconnect('unauthorized');
             }
-        }, 5000);
+        }, 5000);*/
         socket.on('disconnect', () => {
             console.log('A user disconnected');
         });
@@ -56,6 +51,7 @@ module.exports = (io) => {
 
         socket.on('sent-message-object', async ({ msgObj, to }) => {
             // put msgObj into db, emit it to everyone else in room
+            // make API call instead of sending through socket -- more flexible (devices w/o socket, bots)
             console.log("\n\n msgobj: ", msgObj);
             if (msgObj.content.length > MAX_MSG_LENGTH) {
                 socket.emit('message-error', {

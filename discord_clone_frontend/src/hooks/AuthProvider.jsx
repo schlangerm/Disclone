@@ -5,9 +5,10 @@ import { jwtDecode } from "jwt-decode";
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
-    const [email, setEmail] = useState(null);
-    const [id, setId] = useState(null);
-    const [name, setName] = useState(null);
+    const [email, setEmail] = useState(null); //replace all three of these with 
+    const [id, setId] = useState(null);         //
+    const [name, setName] = useState(null);     //
+    // const [user, setUser] = useState(null); user object
     const [token, setToken] = useState(localStorage.getItem("AuthToken"));
     const navigate = useNavigate();
     const backendURL = import.meta.env.VITE_BACKEND_URL;
@@ -20,9 +21,11 @@ const AuthProvider = ({ children }) => {
             try {
                 //console.log("Theres a token :)")
                 const decoded = jwtDecode(token);
-                setEmail(decoded.email);
                 setId(decoded.id)
-                setName(decoded.name)
+                //api call to get user info
+                //construct user object with user info
+                setName(decoded.name);
+                setEmail(decoded.email);
             } catch (error) {
                 console.error(error);
                 localStorage.removeItem('AuthToken');
@@ -103,7 +106,7 @@ const AuthProvider = ({ children }) => {
         return;
     };
 
-    return (
+    return (                                    //replace these three with user object
         <AuthContext.Provider value = {{ token, email, id, name, loginAction, logOut, registerAction }}>
             {children}
         </AuthContext.Provider>

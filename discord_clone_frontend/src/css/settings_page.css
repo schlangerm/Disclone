@@ -1,5 +1,5 @@
-.homepage {
+.settings-page {
     display: flex;
     flex-direction: row;
-    height: 90vh;
+    height: 100vh; 
 }

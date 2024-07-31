@@ -1,5 +1,5 @@
 .chatroom-box {
-    background-color: rgb(59, 94, 94);
+    background-color: #3B3B3B;
     flex: 3;
     padding: 20px;
 }
@@ -16,8 +16,24 @@
 .chat-messages-wrapper {
     display: flex;
     flex-direction: column;
+    width: 100%;
+}
+
+.chat-name-and-settings {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.chat-settings-button {
+    font-size: 16px;
+    background-color: #2e2e2e;
+    color: white;
+}
+
+.messages {
     overflow-y: scroll;
-    flex: 1
+    height: 70vh;
 }
 
 .member-panel-wrapper {
@@ -46,4 +62,24 @@
 
 .delete-chat-button:hover {
     background-color: #c0392b;
+}
+
+.dropdown-container {
+    position: relative;
+    display: inline-block;
+    margin-left: 5px;
+}
+
+.user-input {
+    display: flex;
+    align-items: center;
+    background-color: #2e2e2e;
+}
+
+.user-input input {
+    flex-grow: 1;
+}
+
+.user-input button {
+    font-size: 16px;
 }

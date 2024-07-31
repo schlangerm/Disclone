@@ -113,4 +113,12 @@
 
 7/24 -  Switched from using context to give components the address of the app and backend to using .env 
         Reworked sockets to initialize in the App.jsx file (front) so all components can make use of sockets
-    
+
+7/25 -  OK, I'm officially in cleaning mode. Working on making everything pretty and presentable, starting
+        with the god-ugly front pages.
+        Added dashboard layout 
+        Tuned member panel css to fill the height of its container and push the chat box when it opens
+
+7/29 -  Changed color scheme
+        Moved delete chat button into a chat options dropdown
+        Ongoing work on making it all prettier

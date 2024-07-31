@@ -1,7 +1,8 @@
 .main-body {
-    background-color: rgb(59, 94, 94);
-    flex: 3;
+    background-color: #3B3B3B;
+    flex: 10;
     padding: 20px;
+    height: 80vh;
 }
 
 .chat-header {
@@ -11,8 +12,8 @@
     margin-bottom: 20px;
 }
 
-.sender-name {
-    font-weight: bold;
+.datetime {
+    color: gray;
 }
 
 .delete-chat-button {

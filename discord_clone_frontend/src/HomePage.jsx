@@ -2,13 +2,12 @@ import React, { useEffect } from 'react';
 import { useState } from 'react';
 import MainBody from './MainBody.jsx'
 import LeftNavbar from './LeftNavbar.jsx'
-import TopNavbar from './TopNavbar.jsx';
 import { useAuth } from './hooks/AuthProvider';
 
 import './css/globals.css';
 import './css/homepage.css';
 
-
+ 
 const HomePage = () => {
     const [activeChatroom, setActiveChatroom] = useState(null);
     const [chatrooms, setChatrooms] = useState([]);
@@ -66,17 +65,14 @@ const HomePage = () => {
     console.log("homepage email received: ", email);
     return (
       <div className="homepage">
-        <TopNavbar/>
-        <div className='main-content-wrapper'>
-          {loading ? (
-            <p>Loading chatrooms...</p>
-          ) : (
-            <LeftNavbar 
-              contentArray={chatrooms}  
-              onSelectElement={onSelectChatroom} />
-          )}
-          {activeChatroom && <MainBody activeElement={activeChatroom} />}
-        </div>
+        {loading ? (
+          <p>Loading chatrooms...</p>
+        ) : (
+          <LeftNavbar 
+            contentArray={chatrooms}  
+            onSelectElement={onSelectChatroom} />
+        )}
+        {activeChatroom && <MainBody activeElement={activeChatroom} />}
       </div>
     );
 }

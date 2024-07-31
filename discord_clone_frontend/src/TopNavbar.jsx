@@ -1,6 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./hooks/AuthProvider";
 import { useEffect, useState } from "react";
+import { IoSettings } from "react-icons/io5";
+import { IoChevronBackSharp } from "react-icons/io5";
 
 import './css/globals.css';
 import './css/top_navbar.css'
@@ -45,14 +47,14 @@ const TopNavbar = () => {
           <button 
             className="settings-button" 
             onClick={handleNavigateToSettings}>
-              Settings
+              <IoSettings />
           </button>
         </div>
         <div className="back-button-wrapper">
           <button 
             className="back-button"
             onClick={handleBackClick}>
-              &lt;
+              <IoChevronBackSharp />
           </button>
         </div>
       </header>

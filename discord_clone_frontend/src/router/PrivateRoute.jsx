@@ -1,6 +1,7 @@
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../hooks/AuthProvider";
+import DashboardLayout from "./DashboardLayout";
 
 const PrivateRoute = () => {
   const user = useAuth();
@@ -8,7 +9,10 @@ const PrivateRoute = () => {
     alert('Please log in');
     return <Navigate to="/login" />;
   } 
-  return <Outlet />;
-};
+  return (
+  <DashboardLayout>
+    <Outlet/>
+  </DashboardLayout>
+)};
 
 export default PrivateRoute;
