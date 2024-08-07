@@ -31,9 +31,31 @@
     color: white;
 }
 
+.message {
+    padding: 1px;
+}
+
 .messages {
     overflow-y: scroll;
     height: 70vh;
+}
+
+.messages::-webkit-scrollbar {
+    width: 12px; 
+}
+
+.messages::-webkit-scrollbar-track {
+    background: #2e2e2e; /* track */
+}
+
+.messages::-webkit-scrollbar-thumb {
+    background-color: #5a5a5a; /* thumb */
+    border-radius: 20px; /* roundness thumb */
+    border: 3px solid #2e2e2e; /* padding thumb */
+}
+
+.messages::-webkit-scrollbar-thumb:hover {
+    background-color: #4a4a4a; 
 }
 
 .member-panel-wrapper {
@@ -55,8 +77,8 @@
     background-color: #e74c3c;
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
+    padding: 2px 20px;
+    border-radius: 0px; /* round edges - more is rounder*/
     cursor: pointer;
 }
 
@@ -82,4 +104,11 @@
 
 .user-input button {
     font-size: 16px;
+    background-color: #2e2e2e;
+    color: white;
+}
+
+.sender-name {
+    font-size: 17px;
+    color: wheat;
 }

@@ -52,12 +52,12 @@ const App = () => {
 
   return (
     <Routes>
-      <Route path="/login" element={<LoginPage/>}/>
-      <Route path="/register" element={<RegisterPage/>}/>
+      <Route path="/login" element={<LoginPage />}/>
+      <Route path="/register" element={<RegisterPage />}/>
       <Route element={<PrivateRoute />}>
-        <Route path ="/" element={<Navigate to = "/home"/>}/>
-        <Route path ="/home" element={<HomePage/>}/>
-        <Route path ="/settings" element={<SettingsPage/>}/>
+        <Route path ="/" element={<Navigate to = "/home" />}/>
+        <Route path ="/home" element={<HomePage />}/>
+        <Route path ="/settings" element={<SettingsPage />}/>
       </Route>
     </Routes>
   );

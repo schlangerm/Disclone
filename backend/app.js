@@ -15,8 +15,9 @@ const { Server } = require('socket.io');
 
 dotenv.config();
 
-const SECRETKEY = process.env.SECRETKEY
-const LOGREQUESTS = false
+const SECRETKEY = process.env.SECRETKEY;
+const MAX_MSG_LENGTH = 1250;
+const LOGREQUESTS = false;
 
 //console.log(SECRETKEY, typeof(SECRETKEY));
 
@@ -116,12 +117,19 @@ async function main() {
             const dbmessage = await models.Message.create({ 
                 content: msgObj.content, 
                 type: msgObj.type,
-                sender_id: msgObj.sender_id,
+                sender_id: req.user.id,
                 chat_id: msgObj.chat_id 
             });
 
-            io.to(to).emit('inc-message-object', dbmessage);
+            io.to(dbmessage.chat_id).emit('inc-message-object', dbmessage);
             console.log('message sent to frontend');
+            res.status(200).json({
+                success: true,
+                error: null,
+                data: {
+                    message: dbmessage
+                },
+            });
         } catch (error) {
             console.log(error)
             socket.emit('message-error', {
@@ -130,14 +138,7 @@ async function main() {
             // maybe return here or otherwise stop operations?
         }
         //check out docs for what sockets is exactly
-        io.sockets.to(req.body.chatroomId).emit('inc-message-obj', dbmessage);
-        res.status(200).json({
-            success: true,
-            error: null,
-            data: {
-                message: dbmessage
-            },
-        });
+        
 
     });
 
