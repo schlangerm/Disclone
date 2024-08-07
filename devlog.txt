@@ -122,3 +122,20 @@
 7/29 -  Changed color scheme
         Moved delete chat button into a chat options dropdown
         Ongoing work on making it all prettier
+
+7/31 -  Yesterday and today, I worked on making the front end less ugly. I think it's coming together. 
+        Today, also reworked the way messages get sent to the backend and the way the backend deals with them. They are once more using an api call to facilitate 
+        future chatbot implementations, instead of just using sockets. 
+        Added event listener for pressing enter in input boxes to submit without having to click the button. 
+        TODO:   - deal with sent msgs not showing up when switching between chatrooms
+                - check useEffect cleanup, make sure that the double-logs are just because of strict mode and any appropriate cleanup is being done.
+                - rework user object in front, stop throwing the token around so much, remove everything but id from token.
+                - add rename chat route
+                - clean up the code
+
+8/7 -   Discovered a huge bug end of last week in which the central chatting functionality was not working as expected. It was failing to display any new messages from another 
+        user, except on pageload. Obviously, this needed to be rectified and so I reworked the sockets and mainly the HomePage and ChatroomBox components.
+        Everything works well now :D
+        -Added (and then removed) chatroom context proivder as a potential fix for the above issue
+        -Removed socket handling from chatroom box, replaced in homepage
+        -Reworked socket logic and rendering logic to fix above issue

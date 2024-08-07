@@ -1,13 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useAuth } from './hooks/AuthProvider.jsx';
-
-import './css/chatroom_box.css'
-import './css/globals.css';
-import SlidingPanel from './SlidingPanel.jsx';
-import socket from './sockets/socket.js';
+import React, { useEffect, useRef, useState } from "react";
+import { useAuth } from "./hooks/AuthProvider.jsx";
+import SlidingPanel from "./SlidingPanel.jsx";
 import { FaAngleDoubleDown } from "react-icons/fa";
 import { IoMdArrowRoundUp } from "react-icons/io";
-import Dropdown from './components/Dropdown.jsx';
+import Dropdown from "./components/Dropdown.jsx";
+
+import "./css/chatroom_box.css"
+import "./css/globals.css";
 
 const ChatroomBox = ({ activeElement }) => {
     const activeChatroom = activeElement;
@@ -26,61 +25,56 @@ const ChatroomBox = ({ activeElement }) => {
 
     const members = activeChatroom.Users
 
-    // on component mount
     useEffect(() => {
-
-      socket.on('inc-message-object', (msgObj) => {
-        setMessages((prevMsgs) => [...prevMsgs, msgObj]);
-      });
-
-      socket.on('message-error', (data) => {
-        alert(data.error);
-      })
-
-      return () => {
-        // on component dismount
-        socket.off('inc-message-object');
-        socket.off('message-error');
-      };
-    }, []); 
-
-    // When chatroom changes: 
-    useEffect(() => {
-      if (activeChatroom && activeChatroom.id) {
-        socket.emit('joinRoom', activeChatroom.id)
-        console.log('Join room request sent');
-
-        setMessages(activeChatroom.Messages);
-        
-        return () => {
-          // on component dismount
-          socket.emit('leaveRoom', activeChatroom.id);
-        };
-      }
-    }, [activeChatroom]);
+      setMessages(activeChatroom.Messages);
+    }, [activeChatroom])
 
     const toggleMemberPanel = () => {
       setMemberPanelOpen(!memberPanelOpen);
     }
 
-    const onMessageSend = async (message, activeChatroomId ) => { // socket connection
+    const handleEnterKey = (event) => {
+      if (event.key === "Enter") {
+        onMessageSend(message, activeChatroom.id);
+      }
+    }
+
+    const onMessageSend = async (message, activeChatroomId ) => { // socket connection REWORK to api call
       if (message.length > MAX_MSG_LENGTH) {
-        alert(`Messages must be less than ${MAX_MSG_LENGTH} characters`)
+        alert(`Messages must be less than ${MAX_MSG_LENGTH} characters`);
+        return;
       }
-      const msgObj = {
-        content: message,
-        type: 'text', 
-        sender_id: user.id,
-        chat_id: activeChatroomId
+
+      if (message.length < 1) {
+        alert("Messages cannot be empty");
+        return;
       }
-      console.log(msgObj);
-      socket.emit('sent-message-object', { msgObj, to: activeChatroomId });
+
+      const response = await fetch(`${backendURL}/api/message`, {
+        method: "post",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer: ${user?.token}` //get token from localstorage (pass token as rarely as possible)
+        },
+        body: JSON.stringify({
+          content: message,
+          type: "text",
+          chat_id: activeChatroomId
+        })
+      });
+      const res = await response.json();
+      console.log(`response: ${res}`);
+      if (res.success) {
+        console.log("Message sent successfully")
+      } else {
+        alert("Failed to send message");
+      }
       setMessage(""); // TODO implement other types of messages
     }
 
     const onDeleteChat = async () => { // api call
       const response = await fetch(`${backendURL}/api/chat?id=${activeChatroom.id}`, {
-        method: 'delete',
+        method: "delete",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer: ${user?.token}` //get token from localstorage (pass token as rarely as possible)
@@ -89,9 +83,9 @@ const ChatroomBox = ({ activeElement }) => {
       const res = await response.json();
       console.log(`response: ${res}`);
       if (res.success) {
-        alert('Chat deleted successfully');
+        alert("Chat deleted successfully");
       } else {
-        alert('Failed to delete chat');
+        alert("Failed to delete chat");
       }
     };
 
@@ -115,7 +109,7 @@ const ChatroomBox = ({ activeElement }) => {
     }
 
     return (
-      <div className={`chatroom-box ${memberPanelOpen ? 'shfited' : ''}`}>
+      <div className={`chatroom-box ${memberPanelOpen ? "shfited" : ""}`}>
         <div className="chat-header">
           <div className="chat-name-and-settings">
             <h4>{activeChatroom.name}</h4>
@@ -137,8 +131,8 @@ const ChatroomBox = ({ activeElement }) => {
             Members
           </button>
         </div>
-        <div className='chat-content-container'>
-          <div className='chat-messages-wrapper'>
+        <div className="chat-content-container">
+          <div className="chat-messages-wrapper">
             <div className="messages">
               {messages
                 .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)) //ascending order
@@ -148,7 +142,7 @@ const ChatroomBox = ({ activeElement }) => {
                   return (
                     <div key={message.id} className="message">
                       {showName && (
-                        <div className='sender-name'>
+                        <div className="sender-name">
                           {
                             (() => {
                               let user = activeChatroom.Users.find((user) => user.id === message.sender_id) 
@@ -157,14 +151,14 @@ const ChatroomBox = ({ activeElement }) => {
                           }
                         </div>
                       )}
-                      <div className='message-content'> {message.content} </div>
-                      <div className='datetime'> 
-                        {new Date (message.createdAt).toLocaleString('en-US', {
-                        year: '2-digit',
-                        month: '2-digit',
-                        day: '2-digit',
-                        hour: 'numeric',
-                        minute: '2-digit',
+                      <div className="message-content"> {message.content} </div>
+                      <div className="datetime"> 
+                        {new Date (message.createdAt).toLocaleString("en-US", {
+                        year: "2-digit",
+                        month: "2-digit",
+                        day: "2-digit",
+                        hour: "numeric",
+                        minute: "2-digit",
                         hour12: true,
                       })} </div> 
                     </div>
@@ -174,10 +168,12 @@ const ChatroomBox = ({ activeElement }) => {
             </div>
             <div className="user-input">
               <input
+                type="text"
                 name="message"
                 value={message}
                 placeholder="Write a message..."
                 onChange={(event) => setMessage(event.target.value)}
+                onKeyDown={handleEnterKey}
               />
               <button
                 onClick={() => {
@@ -189,7 +185,7 @@ const ChatroomBox = ({ activeElement }) => {
               </button>
             </div>
           </div>
-          <div className='member-panel-wrapper'>
+          <div className="member-panel-wrapper">
               <SlidingPanel items={members} isOpen={memberPanelOpen} />
           </div>
         </div>

@@ -11,7 +11,26 @@ const LoginPage = () => {
     const [password, setPassword] = useState('')
     const appURL = import.meta.env.VITE_FRONTEND_URL
 
-  
+    const handleSubmit = () => {
+      if (email && password) {
+        console.log(email, password);
+        user.loginAction(
+          {
+            email: email,
+            password: password,
+        });
+      }
+      else {
+        alert("Please provide a valid email and password");
+      }
+    }
+
+    const handleEnterKey = (event) => {
+      if (event.key === 'Enter') {
+        handleSubmit();
+      }
+    }
+
     return (
       <div className="login-page">
         <div className="input-wrapper">
@@ -22,6 +41,7 @@ const LoginPage = () => {
               placeholder="email@host.org"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
+              onKeyDown={handleEnterKey}
             />
           </label>
           <label>
@@ -32,23 +52,12 @@ const LoginPage = () => {
               type="password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
+              onKeyDown={handleEnterKey}
             />
           </label>
           <button
             children="Submit"
-            onClick={() => {
-              if (email && password) {
-                console.log(email, password);
-                user.loginAction(
-                  {
-                    email: email,
-                    password: password,
-                });
-              }
-              else {
-                alert("Please provide a valid email and password");
-              }
-            }}
+            onClick={handleSubmit}
           />
         </div>
         <div className='register-offer'>
