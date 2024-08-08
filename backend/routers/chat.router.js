@@ -216,6 +216,66 @@ async function setupChatRoutes(app) {
             });
         }
     });
+
+    app.put('/api/chat', async (req, res) => {
+        const chatId = req.query.id;
+        const userId = req.user.id;
+        const newName = req.body.newName;
+
+        // user must be owner
+
+        try {
+            owner = await models.User_Chat.findOne({
+                where: { user_id: userId, chat_id: chatId } 
+            });
+
+            if (!owner.is_owner) {
+                return res.status(403).json({
+                    success: false,
+                    error: "Forbidden",
+                    data: null
+                });
+            }
+        } catch (error) {
+            console.log("error in finding owner", error);
+            return res.status(500).json({
+                success: false,
+                error: "Internal server error",
+                data: null
+            })
+        }
+
+        try {
+            console.log("renaming stage");
+            await models.Chat.update({ name: newName },
+                { where: { id: chatId } })
+                .then(([rowsUpdated]) => {
+                    if (rowsUpdated > 0) {
+                        console.log(`user ${userId} updated chat ${chatId}'s name to ${newName}`);
+                        res.status(200).json({
+                            success: true,
+                            error: null,
+                            data: {
+                                results: newName
+                            }
+                        });
+                    } else {
+                        res.status(404).json({
+                            success: false,
+                            error: "User not found",
+                            data: null
+                        });
+                    }
+                })
+        } catch (error) {
+            console.log(`error while user ${userId} attempted to update the name of chat ${chatId} to ${newName}: \n${error}`);
+            res.status(500).json({
+                success: false,
+                error: "Internal Service Error",
+                data: null
+            });
+        };
+    });
 }
 
 

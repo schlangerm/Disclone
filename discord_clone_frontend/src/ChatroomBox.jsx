@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useAuth } from "./hooks/AuthProvider.jsx";
 import SlidingPanel from "./SlidingPanel.jsx";
 import { FaAngleDoubleDown } from "react-icons/fa";
 import { IoMdArrowRoundUp } from "react-icons/io";
@@ -7,6 +6,8 @@ import Dropdown from "./components/Dropdown.jsx";
 
 import "./css/chatroom_box.css"
 import "./css/globals.css";
+import RenameChatModal from "./modals/RenameChatModal.jsx";
+import { makeApiRequest } from "./helpers.js";
 
 const ChatroomBox = ({ activeElement }) => {
     const activeChatroom = activeElement;
@@ -14,11 +15,11 @@ const ChatroomBox = ({ activeElement }) => {
     const [messages, setMessages] = useState(activeChatroom.Messages);
     const [memberPanelOpen, setMemberPanelOpen] = useState(false);
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+    const [isRenameModalVisible, setRenameModalVisible] = useState(false);
+    const messagesEndRef = useRef(null);
 
     const backendURL = import.meta.env.VITE_BACKEND_URL;
-
-    const user = useAuth()
-    const messagesEndRef = useRef(null);
+    const token = localStorage.getItem("AuthToken");
 
     const MAX_MSG_LENGTH = 1250;
 
@@ -39,7 +40,7 @@ const ChatroomBox = ({ activeElement }) => {
       }
     }
 
-    const onMessageSend = async (message, activeChatroomId ) => { // socket connection REWORK to api call
+    const onMessageSend = async (message, activeChatroomId ) => {
       if (message.length > MAX_MSG_LENGTH) {
         alert(`Messages must be less than ${MAX_MSG_LENGTH} characters`);
         return;
@@ -50,20 +51,12 @@ const ChatroomBox = ({ activeElement }) => {
         return;
       }
 
-      const response = await fetch(`${backendURL}/api/message`, {
-        method: "post",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer: ${user?.token}` //get token from localstorage (pass token as rarely as possible)
-        },
-        body: JSON.stringify({
-          content: message,
-          type: "text",
-          chat_id: activeChatroomId
-        })
+      const res = await makeApiRequest(`${backendURL}/api/message`, 'POST', {
+        content: message,
+        type: "text",
+        chat_id: activeChatroomId
       });
-      const res = await response.json();
-      console.log(`response: ${res}`);
+      console.log(`response: ${JSON.stringify(res)}`);
       if (res.success) {
         console.log("Message sent successfully")
       } else {
@@ -72,16 +65,9 @@ const ChatroomBox = ({ activeElement }) => {
       setMessage(""); // TODO implement other types of messages
     }
 
-    const onDeleteChat = async () => { // api call
-      const response = await fetch(`${backendURL}/api/chat?id=${activeChatroom.id}`, {
-        method: "delete",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer: ${user?.token}` //get token from localstorage (pass token as rarely as possible)
-        }
-      });
-      const res = await response.json();
-      console.log(`response: ${res}`);
+    const onDeleteChat = async () => {
+      const res = await makeApiRequest(`${backendURL}/api/chat?id=${activeChatroom.id}`, 'DELETE');
+      console.log(`response: ${JSON.stringify(res)}`);
       if (res.success) {
         alert("Chat deleted successfully");
       } else {
@@ -95,6 +81,23 @@ const ChatroomBox = ({ activeElement }) => {
         onDeleteChat()
       }
     };
+
+    const openRenameChatModal = () => {
+      setRenameModalVisible(true);
+    };
+
+    const onRenameChat = async (newName) => { //api call 
+      const res = await makeApiRequest(`${backendURL}/api/chat?id=${activeChatroom.id}`, 'PUT', {
+        newName: newName
+      });
+      if (res.success) {
+        alert("Chat renamed successfully");
+      } else {
+        alert("Failed to rename chat");
+      }
+    }
+
+    
 
     const scrollToBottom = () => {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -122,6 +125,9 @@ const ChatroomBox = ({ activeElement }) => {
                 contentArray={[
                   <button className="delete-chat-button" onClick={handleDeleteChat}>
                     Delete Chat
+                  </button>,
+                  <button className="rename-chat-button" onClick={openRenameChatModal}>
+                    Rename Chat
                   </button>
                 ]}
               />
@@ -174,6 +180,7 @@ const ChatroomBox = ({ activeElement }) => {
                 placeholder="Write a message..."
                 onChange={(event) => setMessage(event.target.value)}
                 onKeyDown={handleEnterKey}
+                autoComplete="off"
               />
               <button
                 onClick={() => {
@@ -189,6 +196,11 @@ const ChatroomBox = ({ activeElement }) => {
               <SlidingPanel items={members} isOpen={memberPanelOpen} />
           </div>
         </div>
+        <RenameChatModal
+          isVisible={isRenameModalVisible}
+          onClose={() => setRenameModalVisible(false)}
+          onSubmit={onRenameChat}
+        />
       </div>
     );
 };

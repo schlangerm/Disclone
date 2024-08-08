@@ -7,6 +7,7 @@ import socket from './sockets/socket.js';
 
 import './css/globals.css';
 import './css/homepage.css';
+import { makeApiRequest } from './helpers.js';
 
  
 const HomePage = () => {
@@ -14,43 +15,32 @@ const HomePage = () => {
     const [chatrooms, setChatrooms] = useState([]);
     const [chatroomMemberships, setChatroomMemberships] = useState([]);
     const [loading, setLoading] = useState(true);
-    const user = useAuth();
+    const { logOut } = useAuth();
     const backendURL = import.meta.env.VITE_BACKEND_URL;
-    console.log("!! user:", user);
-    //console.log("!!! email:", user.email)
-    const email = user?.email;
+    const token = localStorage.getItem("AuthToken")
 
     useEffect(() => {
       const fetchChatrooms = async () => { // api call
         try {
           console.log("asking for chatrooms") 
-          const response = await fetch(`${backendURL}/api/chatrooms`, {
-            method: "get",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer: ${user?.token}`
-            }
-          });
-          const res = await response.json();
-          console.log("response is: ", res)
+          const res = await makeApiRequest(`${backendURL}/api/chatrooms`, 'GET');
+          console.log(`response is: ${JSON.stringify(res)}`);
           if (res.error) {
             alert(res.error);
             if (res.data === "ExpiredToken") {
               alert("Please log in again")
-              user.logOut()
+              logOut()
             }
             return;
           }
           if (res.success) {
             const chatroomsArray = res.data.results
-            //console.log("chatrooms received: ", chatroomsArray)
             // set chatroom membership
             setChatroomMemberships(chatroomsArray.map(chatroom => chatroom.id));
             // add the chatroom type
             const updatedChatroomsArray = chatroomsArray.map(element => {
               return { ...element, type: "Chatrooms"};
             })
-            //console.log("chatrooms updated: ", updatedChatroomsArray)
             setChatrooms(updatedChatroomsArray);
             setLoading(false);
           }
@@ -60,10 +50,10 @@ const HomePage = () => {
       };
 
       fetchChatrooms();
-    }, [backendURL, user?.token]);
+    }, [backendURL, token]);
 
     
-    useEffect(() => { //This leaves the room and rejoins every time a message is sent from user
+    useEffect(() => {
       //for each chatroom:
       chatroomMemberships.forEach((chatroomId)=> {
         socket.emit("joinRoom", chatroomId);
@@ -81,7 +71,7 @@ const HomePage = () => {
 
     useEffect(() => {
       
-      socket.on('inc-message-object', (msgObj) => { //sends to specific chatroom
+      socket.on('inc-message-object', (msgObj) => { //incoming to specific chatroom (joined above)
 
         console.log("incoming message from backend socket server");
 
@@ -121,8 +111,6 @@ const HomePage = () => {
     const onSelectChatroom = async (chatroom) => { 
       setActiveChatroom(chatroom);
     };
-
-    console.log("homepage email received: ", email);
     return (
       <div className="homepage">
         {loading ? (

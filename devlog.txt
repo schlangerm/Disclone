@@ -139,3 +139,11 @@
         -Added (and then removed) chatroom context proivder as a potential fix for the above issue
         -Removed socket handling from chatroom box, replaced in homepage
         -Reworked socket logic and rendering logic to fix above issue
+
+8/8 -   -Stopped passing the token in context, setting it to and getting it from local storage instead
+        -Created and tested api request wrapper to help with DRY
+        -Created a user class, implemented it in AuthProvider
+        -Created rename chat modal and api endpoint to support it
+        
+        TODO:   create Chat modal eats first keypress
+                Doesn't appear until page reload: new chat, chat rename, delete chat, user rename

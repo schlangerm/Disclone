@@ -16,9 +16,25 @@ async function setupUserRoutes(app) {
         });
     });
 
+    app.get('/api/user', (req, res) => {
+        console.log(`user ${req.user} requesting user data`);
+        
+        res.status(200).json({
+            success: true,
+            error: false,
+            data: {
+                user: {
+                    id: req.user.id,
+                    name: req.user.name,
+                    email: req.user.email
+                }
+            }
+        });
+    })
+
     app.put('/api/user/displayname', async (req, res) => {
         // requires newName in body, auth header
-        console.log(`user: ${req.user} requesting to change display name`);
+        console.log(`user: ${req.user.id} requesting to change display name`);
         const newName = req.body.newName;
         await models.User.update({ name: newName },
             { where: { id: req.user.id } })

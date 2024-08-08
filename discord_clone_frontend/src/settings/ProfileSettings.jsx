@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import { useAuth } from "../hooks/AuthProvider";
+import { makeApiRequest } from "../helpers";
 
 const ProfileSettings = () => {
     const [newName, setNewName] = useState('')
+    const { logOut } = useAuth()
     const backendURL = import.meta.env.VITE_BACKEND_URL
-    const user = useAuth()
+    const token = localStorage.getItem("AuthToken");
+    
 
     const handleNameChange = async () => { // api call
 
@@ -12,39 +15,26 @@ const ProfileSettings = () => {
             alert('Please enter a new display name');
             return;
         }
-
-        const response = await fetch(`${backendURL}/api/user/displayname`, {
-            method: 'put',
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer: ${user?.token}`
-            },
-            body: JSON.stringify({
-                newName: newName
-            })
+        const res = await makeApiRequest(`${backendURL}/api/user/displayname`, 'PUT', {
+            newName: newName
         });
-        const res = await response.json();
-        console.log(`response: ${res}`);
+        console.log(`response: ${JSON.stringify(res)}`);
         if (res.success) {
-            alert('Your display name has been updated. Please log in again to see changes reflected.')
+            alert('Your display name has been updated. Please reload the page to see changes reflected.')
         } else {
             alert('Your display name could not be updated.') // TODO: inform users when unique constraint violated
         }
     }
 
-    const onDeleteUser = async () => {
-        const response = await fetch(`${backendURL}/api/user/delete`, {
-            method: 'delete',
-            headers: {
-                "Conttent-Type": "application/json",
-                "Authorization": `Bearer: ${user?.token}`
-            }
-        });
-        const res = await response.json();
-        console.log(`response: ${res}`);
+    const onDeleteUser = async () => { // api call
+
+        const res = await makeApiRequest(`${backendURL}/api/user/delete`, 'DELETE');
+       
+        console.log(`response: ${JSON.stringify(res)}`);
+        
         if (res.success) {
             alert('Your account has been deleted. This cannot be undone.');
-            user.logOut();
+            logOut();
         } else {
             alert("Failed to delete your account. Contact support.");
         }
