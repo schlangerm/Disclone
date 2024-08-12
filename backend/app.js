@@ -65,9 +65,8 @@ async function main() {
                 }
                 const userIdFromJWT = payload.id;
                 try {
-                    const dbUser = await models.User.findByPk(userIdFromJWT); //this will need to be error handled im sure
+                    const dbUser = await models.User.findByPk(userIdFromJWT); 
                     req.user = dbUser;
-                    //console.log("api access by user", dbUser)
                     if (!dbUser) {
                         return res.status(401).json({
                             success: false,
@@ -189,18 +188,15 @@ async function main() {
 
 
 
-    app.post('/auth/login', async (req, res) => {
+    app.post('/auth/login', async (req, res) => { // email and pass in body
         try {
-            let user_json = req.body
-            console.log("request body: ", user_json)
-            const user = await models.User.findOne({ where: { email: user_json.email } });
+            let userJson = req.body
+            console.log("request body: ", userJson)
+            const user = await models.User.findOne({ where: { email: userJson.email } });
             console.log("login request from user: ", user, "id: ", user?.id);
-            if (user && user.authenticate(user_json.password)){
+            if (user && user.authenticate(userJson.password)){
                 const token = jwt.sign(
-                    { 
-                        id: user.id,
-                        email: user.email,
-                        name: user.name }, SECRETKEY, { expiresIn: '8h' } 
+                    { id: user.id }, SECRETKEY, { expiresIn: '8h' } 
                 );
 
                 res.status(200).json({
@@ -253,10 +249,7 @@ async function main() {
             console.log("User: ", new_user.email, "'s auto-generated ID:", new_user.id);
             if (new_user) {
                 const token = jwt.sign(
-                    { 
-                        id: new_user.id,
-                        email: new_user.email, 
-                        name: new_user.name }, SECRETKEY, { expiresIn: '8h' } 
+                    { id: new_user.id }, SECRETKEY, { expiresIn: '8h' } 
                 );
                 res.status(200).json({
                     success: true,

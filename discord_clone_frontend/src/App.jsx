@@ -5,28 +5,28 @@ import HomePage from './HomePage.jsx';
 import PrivateRoute from './router/PrivateRoute';
 import RegisterPage from './RegisterPage.jsx';
 import SettingsPage from './SettingsPage.jsx';
+import socket from './sockets/socket.js';
 
 import './css/globals.css'
-import socket from './sockets/socket.js';
-import { useAuth } from './hooks/AuthProvider.jsx';
+
 
 
 
 const App = () => {
   const [isConnected, setIsConnected] = useState(socket.connected);
   //const [someEvents, setSomeEvents] = useState([]);
-  const user = useAuth();
+  const token = localStorage.getItem("AuthToken")
 
   useEffect(() => {
 
-    if (user.token) {
+    if (token) {
       socket.connect();
     }
 
     const onConnect = () => {
       setIsConnected(true);
       console.log('Socket connected to server, may not be authenticated');
-      socket.emit('authenticate', {token: user.token});
+      socket.emit('authenticate', {token: token});
     }
 
     const onDisconnect = () => {
@@ -48,7 +48,7 @@ const App = () => {
       socket.off('disconnect', onDisconnect);
       //socket.off('something', onSomeEvent); // example
     };
-  }, [user.token]); //runs when user.token changes
+  }, [token]); //runs when token changes
 
   return (
     <Routes>

@@ -1,9 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useAuth } from "./hooks/AuthProvider.jsx";
+import { makeApiRequest, reloadPage } from "./helpers.js";
+
 import SlidingPanel from "./SlidingPanel.jsx";
+import RenameChatModal from "./modals/RenameChatModal.jsx";
+import Dropdown from "./components/Dropdown.jsx";
+
 import { FaAngleDoubleDown } from "react-icons/fa";
 import { IoMdArrowRoundUp } from "react-icons/io";
-import Dropdown from "./components/Dropdown.jsx";
 
 import "./css/chatroom_box.css"
 import "./css/globals.css";
@@ -14,11 +17,11 @@ const ChatroomBox = ({ activeElement }) => {
     const [messages, setMessages] = useState(activeChatroom.Messages);
     const [memberPanelOpen, setMemberPanelOpen] = useState(false);
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+    const [isRenameModalVisible, setRenameModalVisible] = useState(false);
+    const messagesEndRef = useRef(null);
 
     const backendURL = import.meta.env.VITE_BACKEND_URL;
-
-    const user = useAuth()
-    const messagesEndRef = useRef(null);
+    const token = localStorage.getItem("AuthToken");
 
     const MAX_MSG_LENGTH = 1250;
 
@@ -39,7 +42,7 @@ const ChatroomBox = ({ activeElement }) => {
       }
     }
 
-    const onMessageSend = async (message, activeChatroomId ) => { // socket connection REWORK to api call
+    const onMessageSend = async (message, activeChatroomId ) => {
       if (message.length > MAX_MSG_LENGTH) {
         alert(`Messages must be less than ${MAX_MSG_LENGTH} characters`);
         return;
@@ -50,20 +53,12 @@ const ChatroomBox = ({ activeElement }) => {
         return;
       }
 
-      const response = await fetch(`${backendURL}/api/message`, {
-        method: "post",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer: ${user?.token}` //get token from localstorage (pass token as rarely as possible)
-        },
-        body: JSON.stringify({
-          content: message,
-          type: "text",
-          chat_id: activeChatroomId
-        })
+      const res = await makeApiRequest(`${backendURL}/api/message`, 'POST', {
+        content: message,
+        type: "text",
+        chat_id: activeChatroomId
       });
-      const res = await response.json();
-      console.log(`response: ${res}`);
+      console.log(`response: ${JSON.stringify(res)}`);
       if (res.success) {
         console.log("Message sent successfully")
       } else {
@@ -72,18 +67,12 @@ const ChatroomBox = ({ activeElement }) => {
       setMessage(""); // TODO implement other types of messages
     }
 
-    const onDeleteChat = async () => { // api call
-      const response = await fetch(`${backendURL}/api/chat?id=${activeChatroom.id}`, {
-        method: "delete",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer: ${user?.token}` //get token from localstorage (pass token as rarely as possible)
-        }
-      });
-      const res = await response.json();
-      console.log(`response: ${res}`);
+    const onDeleteChat = async () => {
+      const res = await makeApiRequest(`${backendURL}/api/chat?id=${activeChatroom.id}`, 'DELETE');
+      console.log(`response: ${JSON.stringify(res)}`);
       if (res.success) {
         alert("Chat deleted successfully");
+        reloadPage();
       } else {
         alert("Failed to delete chat");
       }
@@ -92,9 +81,49 @@ const ChatroomBox = ({ activeElement }) => {
     const handleDeleteChat = () => {
       const confirmDelete = window.confirm("Are you sure you want to delete this chat? Only the chat creator can delete the chat")
       if (confirmDelete) {
-        onDeleteChat()
+        onDeleteChat();
       }
     };
+
+    const openRenameChatModal = () => {
+      setRenameModalVisible(true);
+    };
+
+    const onRenameChat = async (newName) => { //api call 
+      const res = await makeApiRequest(`${backendURL}/api/chat?id=${activeChatroom.id}`, 'PUT', {
+        newName: newName
+      });
+      if (res.success) {
+        alert("Chat renamed successfully");
+        reloadPage();
+      } else {
+        alert("Failed to rename chat");
+      }
+    }
+
+    const onLeaveChat = async () => {
+      const res = await makeApiRequest(`${backendURL}/api/chat/leave?id=${activeChatroom.id}`, 'DELETE');
+      console.log(`response: ${JSON.stringify(res)}`);
+      if (res.success) {
+        alert("Chat left successfully");
+        reloadPage();
+      } else {
+        if (res.data === "Owner") {
+          alert("Failed to leave chat - Owners cannot leave their chats; but may delete their chats");
+        } else {
+          alert("Failed to leave chat");
+        }
+      }
+    };
+
+    const handleLeaveChat = () => {
+      const confirmLeave = window.confirm("Are you sure you want to leave this chat? You will not be able to view this chat anymore")
+      if (confirmLeave) {
+        onLeaveChat();
+      }
+    };
+
+    
 
     const scrollToBottom = () => {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -119,11 +148,20 @@ const ChatroomBox = ({ activeElement }) => {
               </button>
               <Dropdown 
                 isVisible={isDropdownVisible} 
-                contentArray={[
-                  <button className="delete-chat-button" onClick={handleDeleteChat}>
-                    Delete Chat
-                  </button>
-                ]}
+                contentArray={
+                  activeChatroom.User_Chat && activeChatroom.User_Chat.is_owner ? ([
+                    <button className="delete-chat-button" onClick={handleDeleteChat}>
+                      Delete Chat
+                    </button>,
+                    <button className="rename-chat-button" onClick={openRenameChatModal}>
+                      Rename Chat
+                    </button>
+                  ]) : ([
+                    <button className="leave-chat-button" onClick={handleLeaveChat}>
+                      Leave Chat
+                    </button>
+                  ])
+                }
               />
             </div>
           </div>
@@ -146,6 +184,9 @@ const ChatroomBox = ({ activeElement }) => {
                           {
                             (() => {
                               let user = activeChatroom.Users.find((user) => user.id === message.sender_id) 
+                              if (!user) {
+                                return "[Deleted User]";
+                              }
                               return user.name ? user.name : user.email;
                             })()
                           }
@@ -174,6 +215,7 @@ const ChatroomBox = ({ activeElement }) => {
                 placeholder="Write a message..."
                 onChange={(event) => setMessage(event.target.value)}
                 onKeyDown={handleEnterKey}
+                autoComplete="off"
               />
               <button
                 onClick={() => {
@@ -189,6 +231,11 @@ const ChatroomBox = ({ activeElement }) => {
               <SlidingPanel items={members} isOpen={memberPanelOpen} />
           </div>
         </div>
+        <RenameChatModal
+          isVisible={isRenameModalVisible}
+          onClose={() => setRenameModalVisible(false)}
+          onSubmit={onRenameChat}
+        />
       </div>
     );
 };

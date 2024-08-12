@@ -1,20 +1,21 @@
 import React from 'react';
 import { useState } from 'react';
+import { useAuth } from './hooks/AuthProvider';
 
 import './css/globals.css';
 import './css/login_page.css';
-import { useAuth } from './hooks/AuthProvider';
+
 
 const LoginPage = () => {
-    const user = useAuth()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const appURL = import.meta.env.VITE_FRONTEND_URL
+    const { loginAction } = useAuth();
 
     const handleSubmit = () => {
       if (email && password) {
         console.log(email, password);
-        user.loginAction(
+        loginAction(
           {
             email: email,
             password: password,

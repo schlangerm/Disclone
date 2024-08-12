@@ -1,36 +1,45 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
+import User from "../classes/User";
+//import { jwtDecode } from "jwt-decode";
 
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
-    const [email, setEmail] = useState(null); //replace all three of these with 
-    const [id, setId] = useState(null);         //
-    const [name, setName] = useState(null);     //
-    // const [user, setUser] = useState(null); user object
-    const [token, setToken] = useState(localStorage.getItem("AuthToken"));
+    const [user, setUser] = useState(null);
     const navigate = useNavigate();
     const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 
     useEffect(() => {
-        console.log("UseEffect is running");
-        const token = localStorage.getItem('AuthToken');
-        if (token) {
-            try {
-                //console.log("Theres a token :)")
-                const decoded = jwtDecode(token);
-                setId(decoded.id)
-                //api call to get user info
-                //construct user object with user info
-                setName(decoded.name);
-                setEmail(decoded.email);
-            } catch (error) {
-                console.error(error);
-                localStorage.removeItem('AuthToken');
+        const fetchUserData = async () => {
+            console.log("UseEffect is running");
+            const token = localStorage.getItem('AuthToken');
+            if (token) {
+                try {
+                    const response = await fetch(`${backendURL}/api/user`, {
+                        method: "get",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer: ${token}`
+                        }
+                    });
+                    const res = await response.json();
+                    if (res.success) {
+                        console.log("user data obtained successfully")
+                        const ActiveUser = new User(res.data.user.email, res.data.user.name, res.data.user.id);
+                        setUser(ActiveUser);
+                    } else {
+                        console.log("setting user went wrong");
+                    }
+                } catch (error) {
+                    console.error(error);
+                    localStorage.removeItem('AuthToken');
+                }
             }
-        }
+        };
+
+        fetchUserData();
     }, []); //empty dependency array so that it only runs once, when component mounts
     
     const loginAction = async (data) => {
@@ -50,18 +59,15 @@ const AuthProvider = ({ children }) => {
                 return;
             }
             if (res.data.user) {
-                setEmail(res.data.user.email);
-                setId(res.data.user.id)
-                setName(res.data.user.name)
-                console.log('resdatauser exists!', res.data.user)
-                setToken(res.data.token);
+                const ActiveUser = new User(res.data.user.email, res.data.user.name, res.data.user.id);
+                setUser(ActiveUser);
                 localStorage.setItem("AuthToken", res.data.token);
                 navigate('/');
                 console.log('token successful')
                 return;
             }
             else {
-                setToken("");
+                localStorage.removeItem("AuthToken");
                 navigate('/login');
                 alert('Something went wrong, please log in');
             }
@@ -83,10 +89,9 @@ const AuthProvider = ({ children }) => {
             });
             const res = await response.json();
             if (res.success) {
-                setEmail(res.data.user.email);
-                setId(res.data.user.id);
-                setName(res.data.user.name);
-                setToken(res.data.token);
+                const ActiveUser = new User(res.data.user.email, res.data.user.name, res.data.user.id);
+                setUser(ActiveUser);
+                localStorage.setItem("AuthToken", res.data.token);
                 navigate('/');
                 return;
             }
@@ -97,17 +102,14 @@ const AuthProvider = ({ children }) => {
     };
 
     const logOut = () => {
-        setEmail(null);
-        setId(null);
-        setName(null);
-        setToken("");
+        setUser(null);
         localStorage.removeItem("AuthToken");
         navigate("/login");
         return;
     };
 
-    return (                                    //replace these three with user object
-        <AuthContext.Provider value = {{ token, email, id, name, loginAction, logOut, registerAction }}>
+    return (                                    
+        <AuthContext.Provider value = {{ user, loginAction, logOut, registerAction }}>
             {children}
         </AuthContext.Provider>
     );

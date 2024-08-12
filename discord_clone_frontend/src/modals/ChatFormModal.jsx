@@ -1,47 +1,46 @@
 import { useState } from "react";
-import { useAuth } from "../hooks/AuthProvider";
 import Modal from 'react-modal';
 import '../css/chat_form_modal.css';
+import { makeApiRequest, reloadPage } from "../helpers";
 
 const ChatFormModal = ({ isOpen, onRequestClose }) => { //TODO: add friends-list capability so that we can easily select those we want in the chat, and prevent being added by a random person 
     const [chatName, setChatName] = useState('');
     const [addedUsers, setAddedUsers] = useState(['']);
     const [initialMessage, setInitialMessage] = useState(['']);
-    const user = useAuth()
     const backendURL = import.meta.env.VITE_BACKEND_URL
 
     const handleAddedUsersChange = (index, event) => {
         const newAddedUsers = [...addedUsers];
-        newAddedUsers[index] = event.target.value;
-        setAddedUsers(newAddedUsers);
+        const currentValue = event.target.value;
 
-        if (index === addedUsers.length - 1 && event.target.value !== '') {
+        newAddedUsers[index] = currentValue;
+
+        setAddedUsers(newAddedUsers);
+    };
+
+    const handleInputBlur = (index) => {
+
+        if (index === addedUsers.length - 1 && addedUsers[index].trim() !== '') {
             setAddedUsers([...addedUsers, '']);
         }
     };
 
     const onChatSubmit = async (chatName, submittedAddedUsers, initialMessage) => { //api call
         // name in query, user array, initial message obj w/ content and type
-        const response = await fetch(`${backendURL}/api/chat?name=${chatName}`, {
-            method: 'post',
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer: ${user?.token}`
-              },
-            body: JSON.stringify({
-                userArray: submittedAddedUsers,
-                initialMessage: {
-                    content: initialMessage,
-                    type: 'text'
-                }
-            })
-        }); //change type above when ready to add pics, audio, etc.
-        const res = await response.json();
+
+        const res = await makeApiRequest(`${backendURL}/api/chat?name=${chatName}`, 'POST', {
+            userArray: submittedAddedUsers,
+            initialMessage: {
+                content: initialMessage,
+                type: 'text'
+            }
+        });
         if (res.success) {
-            console.log("response is: ", res);
+            console.log("response is: ", JSON.stringify(res));
             alert("Chat submitted successfully");
+            reloadPage();
         } else {
-            console.log("Error: ", res);
+            console.log("Error: ", res.error);
         }
 
     }
@@ -49,7 +48,7 @@ const ChatFormModal = ({ isOpen, onRequestClose }) => { //TODO: add friends-list
     const handleSubmit = (event) => {
         event.preventDefault();
         const submittedAddedUsers = addedUsers.filter(addedUser => addedUser.trim() !== '');
-        // TODO submit logic here
+
         console.log("Chat name: ", chatName); //string
         console.log("Added Users: ", addedUsers); //array without owner
         console.log("submitted added users object: ", submittedAddedUsers);
@@ -92,6 +91,7 @@ const ChatFormModal = ({ isOpen, onRequestClose }) => { //TODO: add friends-list
                             placeholder="Enter name of your chat..."
                             value={chatName}
                             onChange={(event) => setChatName(event.target.value)}
+                            autoComplete="off"
                         />
                     </label>
                     <label>
@@ -103,6 +103,8 @@ const ChatFormModal = ({ isOpen, onRequestClose }) => { //TODO: add friends-list
                                 placeholder="Enter a friend's email..."
                                 value={addedUser}
                                 onChange={(event) => handleAddedUsersChange(index, event)}
+                                onBlur={() => handleInputBlur(index)}
+                                autoComplete="off"
                             />
                         ))}
                     </label>
@@ -113,6 +115,7 @@ const ChatFormModal = ({ isOpen, onRequestClose }) => { //TODO: add friends-list
                             placeholder="Your chat's first message..."
                             value ={initialMessage}
                             onChange={(event) => setInitialMessage(event.target.value)}
+                            autoComplete="off"
                         />
                     </label>
                 </div>

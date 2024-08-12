@@ -5,15 +5,15 @@ import './css/globals.css'
 import './css/register_page.css'
 
 const RegisterPage = () => {
-    const user = useAuth()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const appURL = import.meta.env.VITE_FRONTEND_URL
+    const { registerAction } = useAuth();
 
     const handleSubmit = () => {
       if (email && password) {
         console.log(email, password);
-        user.registerAction(
+        registerAction(
           {
             email: email,
             password: password,

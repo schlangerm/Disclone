@@ -1,11 +1,10 @@
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "../hooks/AuthProvider";
 import DashboardLayout from "./DashboardLayout";
 
 const PrivateRoute = () => {
-  const user = useAuth();
-  if (!user?.token) {
+  const token = localStorage.getItem("AuthToken");
+  if (!token) {
     alert('Please log in');
     return <Navigate to="/login" />;
   } 

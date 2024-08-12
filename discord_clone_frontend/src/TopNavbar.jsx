@@ -9,13 +9,13 @@ import './css/top_navbar.css'
 
 
 const TopNavbar = () => {
-    const user = useAuth();
+    const { user, logOut } = useAuth();
     const navigate = useNavigate();
     const [userName, setUserName] = useState(null);
 
 
     useEffect(() => {
-      if (user.name) {
+      if (user?.name) {
         setUserName(user.name);
       } else {
         setUserName(user?.email);
@@ -39,7 +39,7 @@ const TopNavbar = () => {
             <button className="logout-button"
               children="Logout"
               onClick={() => {
-                user.logOut()
+                logOut()
               }}/>
           </div>
         </div>
