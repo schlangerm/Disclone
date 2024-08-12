@@ -1,7 +1,7 @@
 import React from 'react';
+
 import ChatroomBox from './ChatroomBox.jsx';
 import SettingsBox from './SettingsBox.jsx';
-
 
 import './css/main_body.css'
 import './css/globals.css';
@@ -13,7 +13,7 @@ const componentMapping = {
 
 const MainBody = ({ activeElement }) => {
   const Component = componentMapping[activeElement?.type];
-  console.log("type: ", activeElement?.type);
+  console.log(`type: ${activeElement?.type}`);
     return (
       <div className='main-body'>
         {Component ? (

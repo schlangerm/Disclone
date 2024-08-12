@@ -1,7 +1,7 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import User from "../classes/User";
-//import { jwtDecode } from "jwt-decode";
+import { createContext, useContext, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import User from '../classes/User';
 
 const AuthContext = createContext();
 
@@ -10,27 +10,26 @@ const AuthProvider = ({ children }) => {
     const navigate = useNavigate();
     const backendURL = import.meta.env.VITE_BACKEND_URL;
 
-
     useEffect(() => {
         const fetchUserData = async () => {
-            console.log("UseEffect is running");
+            console.log('UseEffect is running');
             const token = localStorage.getItem('AuthToken');
             if (token) {
                 try {
                     const response = await fetch(`${backendURL}/api/user`, {
-                        method: "get",
+                        method: 'get',
                         headers: {
-                            "Content-Type": "application/json",
-                            "Authorization": `Bearer: ${token}`
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer: ${token}`
                         }
                     });
                     const res = await response.json();
                     if (res.success) {
-                        console.log("user data obtained successfully")
+                        console.log('user data obtained successfully')
                         const ActiveUser = new User(res.data.user.email, res.data.user.name, res.data.user.id);
                         setUser(ActiveUser);
                     } else {
-                        console.log("setting user went wrong");
+                        console.log('setting user went wrong');
                     }
                 } catch (error) {
                     console.error(error);
@@ -47,7 +46,7 @@ const AuthProvider = ({ children }) => {
             const response = await fetch(`${backendURL}/auth/login`, {
                 method: 'post',
                 headers: {
-                    "Content-Type": "application/json",
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(data), 
             });
@@ -61,13 +60,13 @@ const AuthProvider = ({ children }) => {
             if (res.data.user) {
                 const ActiveUser = new User(res.data.user.email, res.data.user.name, res.data.user.id);
                 setUser(ActiveUser);
-                localStorage.setItem("AuthToken", res.data.token);
+                localStorage.setItem('AuthToken', res.data.token);
                 navigate('/');
                 console.log('token successful')
                 return;
             }
             else {
-                localStorage.removeItem("AuthToken");
+                localStorage.removeItem('AuthToken');
                 navigate('/login');
                 alert('Something went wrong, please log in');
             }
@@ -83,7 +82,7 @@ const AuthProvider = ({ children }) => {
             const response = await fetch(`${backendURL}/auth/register`, {
                 method: 'post',
                 headers: {
-                    "Content-Type": "application/json",
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(data),
             });
@@ -91,7 +90,7 @@ const AuthProvider = ({ children }) => {
             if (res.success) {
                 const ActiveUser = new User(res.data.user.email, res.data.user.name, res.data.user.id);
                 setUser(ActiveUser);
-                localStorage.setItem("AuthToken", res.data.token);
+                localStorage.setItem('AuthToken', res.data.token);
                 navigate('/');
                 return;
             }
@@ -103,8 +102,8 @@ const AuthProvider = ({ children }) => {
 
     const logOut = () => {
         setUser(null);
-        localStorage.removeItem("AuthToken");
-        navigate("/login");
+        localStorage.removeItem('AuthToken');
+        navigate('/login');
         return;
     };
 

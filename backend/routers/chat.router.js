@@ -3,9 +3,9 @@ const models = require('../db/models');
 
 async function setupChatRoutes(app) {
     app.get('/api/chatrooms', async (req, res) => {
-        console.log("user: ", req.user.id, "requesting chatrooms");
+        console.log(`user: ${req.user.id} requesting chatrooms`);
         if (models.User_Chat) {
-            console.log("User_Chat model is defined")
+            console.log('User_Chat model is defined')
         }
         const userChats = await models.User.findOne({ 
             where: { id: req.user.id },
@@ -27,10 +27,8 @@ async function setupChatRoutes(app) {
                 }
             ]
         });
-        //console.log('the chat rows are: ', userChats)
         //db call to get the chatrooms
         const chatrooms = userChats.Chats
-        //console.log("chatrooms: ", chatrooms)
 
         //send the chatrooms back if successful
         res.status(200);
@@ -44,12 +42,12 @@ async function setupChatRoutes(app) {
     }
     );
 
-    app.get('/api/chat', async (req, res) => { //Before testing: go to frontend and call this route
+    app.get('/api/chat', async (req, res) => {
         //responds a chatroom and its messages and users added given a chatroom id, checks if user is part of chat
         if (!req.query?.id) {
             return res.status(400).json({
                 success: false,
-                error: "Bad request",
+                error: 'Bad request',
                 data: null
             });
         }
@@ -93,31 +91,31 @@ async function setupChatRoutes(app) {
             } else {
                 return res.status(404).json({
                     success: false,
-                    error: "Chat not found",
+                    error: 'Chat not found',
                     data: null
                 });
             }
         } catch (error) {
-            console.error("Error fetching chat details: ", error);
+            console.error('Error fetching chat details: ', error);
             return res.status(500).json({
                 success: false,
-                error: "Internal server error",
+                error: 'Internal server error',
                 data: null
             });
         }
     });
 
     app.post('/api/chat', async (req, res) => { 
-        //take userid array (creator and added), initial message, creates a chat
+        //take userid array (added users, min 1), initial message, creates a chat
         const chatName = req.query.name;
         const userArray = req.body.userArray; 
         const initialMessage = req.body.initialMessage;
 
-        // 2 users min, initial message, chat name required
+        // 2 users min (creator and 1 added), initial message, chat name required
         if (!userArray || !initialMessage || !chatName) {
             return res.status(400).json({
                 success: false,
-                error: "Bad request",
+                error: 'Bad request',
                 data: null
             });
         }
@@ -156,10 +154,10 @@ async function setupChatRoutes(app) {
                 }
             });
         } catch (error) {
-            console.error("Error creating new chat: ", error);
+            console.error(`Error creating new chat: ${error}`);
             res.status(500).json({
                 success: false,
-                error: "Internal server error",
+                error: 'Internal server error',
                 data: null
             });
         }
@@ -177,11 +175,11 @@ async function setupChatRoutes(app) {
                 where: { user_id: userId, chat_id: chatId } 
             });
 
-            console.log("owner claim: ", owner)
+            console.log(`owner claim: ${owner}`)
             if (!owner.is_owner) {
                 return res.status(403).json({
                     success: false,
-                    error: "Forbidden",
+                    error: 'Forbidden',
                     data: null
                 });
             }
@@ -189,7 +187,7 @@ async function setupChatRoutes(app) {
             console.log(error);
             return res.status(500).json({
                 success: false,
-                error: "Internal server error",
+                error: 'Internal server error',
                 data: null
             })
         }
@@ -211,7 +209,7 @@ async function setupChatRoutes(app) {
             console.log(error);
             res.status(500).json({
                 success: false,
-                error: "Internal server error",
+                error: 'Internal server error',
                 data: null
             });
         }
@@ -232,21 +230,21 @@ async function setupChatRoutes(app) {
             if (!owner.is_owner) {
                 return res.status(403).json({
                     success: false,
-                    error: "Forbidden",
+                    error: 'Forbidden',
                     data: null
                 });
             }
         } catch (error) {
-            console.log("error in finding owner", error);
+            console.log(`error in finding owner: \n${error}`);
             return res.status(500).json({
                 success: false,
-                error: "Internal server error",
+                error: 'Internal server error',
                 data: null
             })
         }
 
         try {
-            console.log("renaming stage");
+            console.log('renaming stage');
             await models.Chat.update({ name: newName },
                 { where: { id: chatId } })
                 .then(([rowsUpdated]) => {
@@ -262,7 +260,7 @@ async function setupChatRoutes(app) {
                     } else {
                         res.status(404).json({
                             success: false,
-                            error: "User not found",
+                            error: 'User not found',
                             data: null
                         });
                     }
@@ -271,7 +269,7 @@ async function setupChatRoutes(app) {
             console.log(`error while user ${userId} attempted to update the name of chat ${chatId} to ${newName}: \n${error}`);
             res.status(500).json({
                 success: false,
-                error: "Internal Service Error",
+                error: 'Internal Service Error',
                 data: null
             });
         };
@@ -291,8 +289,8 @@ async function setupChatRoutes(app) {
             if (user_chat.is_owner) {
                 return res.status(400).json({
                     success: false,
-                    error: "Bad Request",
-                    data: "Owner"
+                    error: 'Bad Request',
+                    data: 'Owner'
                 });
             }
 
@@ -309,7 +307,7 @@ async function setupChatRoutes(app) {
             console.log(`error while user ${userId} attempted to leave chat ${chatId} : \n${error}`);
             res.status(500).json({
                 success: false,
-                error: "Internal Server Error",
+                error: 'Internal Server Error',
                 data: null
             });
         };

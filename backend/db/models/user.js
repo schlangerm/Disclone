@@ -1,8 +1,8 @@
-const { sq } = require("../config/db");
+const { sq } = require('../config/db');
 const { DataTypes, Sequelize } = require('sequelize');
 const useBcrypt = require('sequelize-bcrypt');
 
-const User = sq.define("User", {
+const User = sq.define('User', {
     id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,

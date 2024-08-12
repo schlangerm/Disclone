@@ -1,15 +1,16 @@
 import React, { useEffect } from 'react';
 import { useState } from 'react';
-import MainBody from './MainBody.jsx'
-import LeftNavbar from './LeftNavbar.jsx'
+
+import { makeApiRequest } from './helpers.js';
 import { useAuth } from './hooks/AuthProvider';
+
+import MainBody from './MainBody.jsx'
+import LeftNavbar from './components/LeftNavbar.jsx'
 import socket from './sockets/socket.js';
 
 import './css/globals.css';
 import './css/homepage.css';
-import { makeApiRequest } from './helpers.js';
 
- 
 const HomePage = () => {
     const [activeChatroom, setActiveChatroom] = useState(null);
     const [chatrooms, setChatrooms] = useState([]);
@@ -17,18 +18,17 @@ const HomePage = () => {
     const [loading, setLoading] = useState(true);
     const { logOut } = useAuth();
     const backendURL = import.meta.env.VITE_BACKEND_URL;
-    const token = localStorage.getItem("AuthToken")
 
     useEffect(() => {
       const fetchChatrooms = async () => { // api call
         try {
-          console.log("asking for chatrooms") 
+          console.log('asking for chatrooms') 
           const res = await makeApiRequest(`${backendURL}/api/chatrooms`, 'GET');
           console.log(`response is: ${JSON.stringify(res)}`);
           if (res.error) {
             alert(res.error);
-            if (res.data === "ExpiredToken") {
-              alert("Please log in again")
+            if (res.data === 'ExpiredToken') {
+              alert('Please log in again')
               logOut()
             }
             return;
@@ -39,7 +39,7 @@ const HomePage = () => {
             setChatroomMemberships(chatroomsArray.map(chatroom => chatroom.id));
             // add the chatroom type
             const updatedChatroomsArray = chatroomsArray.map(element => {
-              return { ...element, type: "Chatrooms"};
+              return { ...element, type: 'Chatrooms'};
             })
             setChatrooms(updatedChatroomsArray);
             setLoading(false);
@@ -50,21 +50,20 @@ const HomePage = () => {
       };
 
       fetchChatrooms();
-    }, [backendURL, token]);
+    }, [backendURL]);
 
-    
     useEffect(() => {
       //for each chatroom:
       chatroomMemberships.forEach((chatroomId)=> {
-        socket.emit("joinRoom", chatroomId);
-        console.log("joining room", chatroomId);
+        socket.emit('joinRoom', chatroomId);
+        console.log('joining room', chatroomId);
       })
 
       return () => {
         //for each chatroom
         chatroomMemberships.forEach((chatroomId) => {
-          socket.emit("leaveRoom", chatroomId);
-          console.log("left room", chatroomId);
+          socket.emit('leaveRoom', chatroomId);
+          console.log('left room', chatroomId);
         })
       }
     }, [chatroomMemberships])
@@ -73,12 +72,12 @@ const HomePage = () => {
       
       socket.on('inc-message-object', (msgObj) => { //incoming to specific chatroom (joined above)
 
-        console.log("incoming message from backend socket server");
+        console.log('incoming message from backend socket server');
 
         setChatrooms((prevChatrooms) => {
           const updatedChatrooms = prevChatrooms.map(chatroom => {
             if (chatroom.id === msgObj.chat_id) {
-              console.log("updating chatroom", chatroom.name); 
+              console.log(`updating chatroom ${chatroom.name}`); 
               return {
                 ...chatroom, 
                 Messages: [...chatroom.Messages, msgObj]
@@ -107,12 +106,11 @@ const HomePage = () => {
       };
     }, [activeChatroom]) // POTENTIAL ISSUE: activeChatroom dependency for socket listeners?
 
-
     const onSelectChatroom = async (chatroom) => { 
       setActiveChatroom(chatroom);
     };
     return (
-      <div className="homepage">
+      <div className='homepage'>
         {loading ? (
           <p>Loading chatrooms...</p>
         ) : (

@@ -1,6 +1,6 @@
-import React from "react";
+import React from 'react';
 
-import './css/sliding_panel.css';
+import '../css/sliding_panel.css';
 
 // for now, requires items to have a .name attribute or .email attribute
 

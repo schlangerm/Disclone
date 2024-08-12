@@ -1,4 +1,4 @@
-const { sq } = require("../config/db");
+const { sq } = require('../config/db');
 const { DataTypes } = require('sequelize');
 
 
@@ -6,7 +6,7 @@ const Chat = sq.define('Chat', {
     id: {
         type: DataTypes.UUID,
         primaryKey: true,
-        defaultValue: DataTypes.UUIDV4, // Automatically generate UUID
+        defaultValue: DataTypes.UUIDV4, // automatically generate UUID
         allowNull: false
     },
     name: {

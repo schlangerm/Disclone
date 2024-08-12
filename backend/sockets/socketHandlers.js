@@ -1,13 +1,6 @@
-const models = require("../db/models");
-const _ = require('lodash');
 const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv');
-
-dotenv.config();
 
 const SECRETKEY = process.env.SECRETKEY;
-const MAX_MSG_LENGTH = 1250;
-
 
 module.exports = (io) => {
     io.on('connection', (socket) => {
@@ -18,26 +11,19 @@ module.exports = (io) => {
 
             jwt.verify(token, SECRETKEY, async (err, payload) => {
                 if (!err) {
-                    console.log("Authenticated socket ", socket.id);
+                    console.log(`Authenticated socket ${socket.id}`);
                     socket.auth = payload;
                 } else {
                     console.log(err)
-                    console.log('Disconnecting unauthenticated JWT from socket ', socket.id);
+                    console.log(`Disconnecting unauthenticated JWT from socket ${socket.id}`);
                     socket.disconnect('unauthorized');
                 }
             });
         });
 
-        /*setTimeout(() => {
-            if (!socket.auth) {
-                console.log('Disconnecting socket timeout ', socket.id);
-                socket.disconnect('unauthorized');
-            }
-        }, 5000);*/
         socket.on('disconnect', () => {
             console.log('A user disconnected');
         });
-        // event handlers
 
         socket.on('joinRoom', (room) => {
             socket.join(room);
@@ -48,11 +34,11 @@ module.exports = (io) => {
             socket.leave(room)
             console.log(`socket ${socket.id} left room ${room}`);
         })
-
+        /*
         socket.on('sent-message-object', async ({ msgObj, to }) => {
             // put msgObj into db, emit it to everyone else in room
             // make API call instead of sending through socket -- more flexible (devices w/o socket, bots)
-            console.log("\n\n msgobj: ", msgObj);
+            console.log('\n\n msgobj: ', msgObj);
             if (msgObj.content.length > MAX_MSG_LENGTH) {
                 socket.emit('message-error', {
                     error: `Message exceeds the maximum allowed length of ${MAX_MESSAGE_LENGTH} characters.`
@@ -75,8 +61,8 @@ module.exports = (io) => {
                 socket.emit('message-error', {
                     error: 'Failed to send the message due to an internal error.'
                 });
-                // maybe return here or otherwise stop operations?
             }
         });
+        */
     });
 }

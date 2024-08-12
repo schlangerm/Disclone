@@ -146,6 +146,5 @@
 
 8/12 -  -Leave chat route and frontend UI added
         -Added logic checking chat owner - leave chat button rendered if not owner, delete chat button if owner\
-
-        TODO: clean code
+        -Cleaned and organized code
         

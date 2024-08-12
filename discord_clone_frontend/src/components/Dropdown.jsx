@@ -1,6 +1,6 @@
-import React from "react";
+import React from 'react';
 
-import "../css/dropdown.css";
+import '../css/dropdown.css';
 
 const Dropdown = ({ isVisible, contentArray }) => {
     return (

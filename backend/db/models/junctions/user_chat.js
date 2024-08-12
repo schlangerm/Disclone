@@ -1,4 +1,4 @@
-const { sq } = require("../../config/db"); 
+const { sq } = require('../../config/db'); 
 const { DataTypes } = require('sequelize');
 
 const User_Chat = sq.define('User_Chat', {

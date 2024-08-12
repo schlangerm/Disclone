@@ -1,19 +1,19 @@
-import React, { useEffect, useRef, useState } from "react";
-import { makeApiRequest, reloadPage } from "./helpers.js";
+import React, { useEffect, useRef, useState } from 'react';
+import { makeApiRequest, reloadPage } from './helpers.js';
 
-import SlidingPanel from "./SlidingPanel.jsx";
-import RenameChatModal from "./modals/RenameChatModal.jsx";
-import Dropdown from "./components/Dropdown.jsx";
+import SlidingPanel from './components/SlidingPanel.jsx';
+import RenameChatModal from './modals/RenameChatModal.jsx';
+import Dropdown from './components/Dropdown.jsx';
 
-import { FaAngleDoubleDown } from "react-icons/fa";
-import { IoMdArrowRoundUp } from "react-icons/io";
+import { FaAngleDoubleDown } from 'react-icons/fa';
+import { IoMdArrowRoundUp } from 'react-icons/io';
 
-import "./css/chatroom_box.css"
-import "./css/globals.css";
+import './css/chatroom_box.css'
+import './css/globals.css';
 
 const ChatroomBox = ({ activeElement }) => {
     const activeChatroom = activeElement;
-    const [message, setMessage] = useState("");
+    const [message, setMessage] = useState('');
     const [messages, setMessages] = useState(activeChatroom.Messages);
     const [memberPanelOpen, setMemberPanelOpen] = useState(false);
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
@@ -21,10 +21,8 @@ const ChatroomBox = ({ activeElement }) => {
     const messagesEndRef = useRef(null);
 
     const backendURL = import.meta.env.VITE_BACKEND_URL;
-    const token = localStorage.getItem("AuthToken");
 
     const MAX_MSG_LENGTH = 1250;
-
 
     const members = activeChatroom.Users
 
@@ -37,7 +35,7 @@ const ChatroomBox = ({ activeElement }) => {
     }
 
     const handleEnterKey = (event) => {
-      if (event.key === "Enter") {
+      if (event.key === 'Enter') {
         onMessageSend(message, activeChatroom.id);
       }
     }
@@ -49,37 +47,37 @@ const ChatroomBox = ({ activeElement }) => {
       }
 
       if (message.length < 1) {
-        alert("Messages cannot be empty");
+        alert('Messages cannot be empty');
         return;
       }
 
       const res = await makeApiRequest(`${backendURL}/api/message`, 'POST', {
         content: message,
-        type: "text",
+        type: 'text',
         chat_id: activeChatroomId
       });
       console.log(`response: ${JSON.stringify(res)}`);
       if (res.success) {
-        console.log("Message sent successfully")
+        console.log('Message sent successfully')
       } else {
-        alert("Failed to send message");
+        alert('Failed to send message');
       }
-      setMessage(""); // TODO implement other types of messages
+      setMessage(''); // TODO implement other types of messages
     }
 
     const onDeleteChat = async () => {
       const res = await makeApiRequest(`${backendURL}/api/chat?id=${activeChatroom.id}`, 'DELETE');
       console.log(`response: ${JSON.stringify(res)}`);
       if (res.success) {
-        alert("Chat deleted successfully");
+        alert('Chat deleted successfully');
         reloadPage();
       } else {
-        alert("Failed to delete chat");
+        alert('Failed to delete chat');
       }
     };
 
     const handleDeleteChat = () => {
-      const confirmDelete = window.confirm("Are you sure you want to delete this chat? Only the chat creator can delete the chat")
+      const confirmDelete = window.confirm('Are you sure you want to delete this chat? Only the chat creator can delete the chat')
       if (confirmDelete) {
         onDeleteChat();
       }
@@ -94,10 +92,10 @@ const ChatroomBox = ({ activeElement }) => {
         newName: newName
       });
       if (res.success) {
-        alert("Chat renamed successfully");
+        alert('Chat renamed successfully');
         reloadPage();
       } else {
-        alert("Failed to rename chat");
+        alert('Failed to rename chat');
       }
     }
 
@@ -105,28 +103,26 @@ const ChatroomBox = ({ activeElement }) => {
       const res = await makeApiRequest(`${backendURL}/api/chat/leave?id=${activeChatroom.id}`, 'DELETE');
       console.log(`response: ${JSON.stringify(res)}`);
       if (res.success) {
-        alert("Chat left successfully");
+        alert('Chat left successfully');
         reloadPage();
       } else {
-        if (res.data === "Owner") {
-          alert("Failed to leave chat - Owners cannot leave their chats; but may delete their chats");
+        if (res.data === 'Owner') {
+          alert('Failed to leave chat - Owners cannot leave their chats; but may delete their chats');
         } else {
-          alert("Failed to leave chat");
+          alert('Failed to leave chat');
         }
       }
     };
 
     const handleLeaveChat = () => {
-      const confirmLeave = window.confirm("Are you sure you want to leave this chat? You will not be able to view this chat anymore")
+      const confirmLeave = window.confirm('Are you sure you want to leave this chat? You will not be able to view this chat anymore')
       if (confirmLeave) {
         onLeaveChat();
       }
     };
 
-    
-
     const scrollToBottom = () => {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
     useEffect(() => {
@@ -138,26 +134,26 @@ const ChatroomBox = ({ activeElement }) => {
     }
 
     return (
-      <div className={`chatroom-box ${memberPanelOpen ? "shfited" : ""}`}>
-        <div className="chat-header">
-          <div className="chat-name-and-settings">
+      <div className={`chatroom-box ${memberPanelOpen ? 'shfited' : ''}`}>
+        <div className='chat-header'>
+          <div className='chat-name-and-settings'>
             <h4>{activeChatroom.name}</h4>
-            <div className="dropdown-container">
-              <button className="chat-settings-button" onClick={toggleChatSettings}>
+            <div className='dropdown-container'>
+              <button className='chat-settings-button' onClick={toggleChatSettings}>
                 <FaAngleDoubleDown />
               </button>
               <Dropdown 
                 isVisible={isDropdownVisible} 
                 contentArray={
                   activeChatroom.User_Chat && activeChatroom.User_Chat.is_owner ? ([
-                    <button className="delete-chat-button" onClick={handleDeleteChat}>
+                    <button className='delete-chat-button' onClick={handleDeleteChat}>
                       Delete Chat
                     </button>,
-                    <button className="rename-chat-button" onClick={openRenameChatModal}>
+                    <button className='rename-chat-button' onClick={openRenameChatModal}>
                       Rename Chat
                     </button>
                   ]) : ([
-                    <button className="leave-chat-button" onClick={handleLeaveChat}>
+                    <button className='leave-chat-button' onClick={handleLeaveChat}>
                       Leave Chat
                     </button>
                   ])
@@ -165,41 +161,41 @@ const ChatroomBox = ({ activeElement }) => {
               />
             </div>
           </div>
-          <button className="member-panel-button" onClick={toggleMemberPanel}>
+          <button className='member-panel-button' onClick={toggleMemberPanel}>
             Members
           </button>
         </div>
-        <div className="chat-content-container">
-          <div className="chat-messages-wrapper">
-            <div className="messages">
+        <div className='chat-content-container'>
+          <div className='chat-messages-wrapper'>
+            <div className='messages'>
               {messages
                 .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)) //ascending order
                 .map((message, index, array) => {
                   const previousMessage = array[index - 1];
                   const showName = !previousMessage || previousMessage.sender_id !== message.sender_id;
                   return (
-                    <div key={message.id} className="message">
+                    <div key={message.id} className='message'>
                       {showName && (
-                        <div className="sender-name">
+                        <div className='sender-name'>
                           {
                             (() => {
                               let user = activeChatroom.Users.find((user) => user.id === message.sender_id) 
                               if (!user) {
-                                return "[Deleted User]";
+                                return '[Deleted User]';
                               }
                               return user.name ? user.name : user.email;
                             })()
                           }
                         </div>
                       )}
-                      <div className="message-content"> {message.content} </div>
-                      <div className="datetime"> 
-                        {new Date (message.createdAt).toLocaleString("en-US", {
-                        year: "2-digit",
-                        month: "2-digit",
-                        day: "2-digit",
-                        hour: "numeric",
-                        minute: "2-digit",
+                      <div className='message-content'> {message.content} </div>
+                      <div className='datetime'> 
+                        {new Date (message.createdAt).toLocaleString('en-US', {
+                        year: '2-digit',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: 'numeric',
+                        minute: '2-digit',
                         hour12: true,
                       })} </div> 
                     </div>
@@ -207,15 +203,15 @@ const ChatroomBox = ({ activeElement }) => {
               })}
               <div ref={messagesEndRef} />
             </div>
-            <div className="user-input">
+            <div className='user-input'>
               <input
-                type="text"
-                name="message"
+                type='text'
+                name='message'
                 value={message}
-                placeholder="Write a message..."
+                placeholder='Write a message...'
                 onChange={(event) => setMessage(event.target.value)}
                 onKeyDown={handleEnterKey}
-                autoComplete="off"
+                autoComplete='off'
               />
               <button
                 onClick={() => {
@@ -227,7 +223,7 @@ const ChatroomBox = ({ activeElement }) => {
               </button>
             </div>
           </div>
-          <div className="member-panel-wrapper">
+          <div className='member-panel-wrapper'>
               <SlidingPanel items={members} isOpen={memberPanelOpen} />
           </div>
         </div>
