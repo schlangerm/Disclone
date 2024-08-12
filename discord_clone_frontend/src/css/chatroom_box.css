@@ -73,16 +73,32 @@
     font-weight: bold;
 }
 
-.delete-chat-button {
-    background-color: #e74c3c;
+.rename-chat-button,
+.delete-chat-button,
+.leave-chat-button {
     color: white;
     border: none;
     padding: 2px 20px;
-    border-radius: 0px; /* round edges - more is rounder*/
+    border-radius: 0px; /* round edges; more is rounder */
     cursor: pointer;
+    width: 100%;
 }
 
-.delete-chat-button:hover {
+.rename-chat-button {
+    background-color: #3b3b3b;
+}
+
+.rename-chat-button:hover {
+    background-color: black;
+}
+
+.delete-chat-button,
+.leave-chat-button {
+    background-color: #e74c3c;
+}
+
+.delete-chat-button:hover,
+.leave-chat-button:hover {
     background-color: #c0392b;
 }
 

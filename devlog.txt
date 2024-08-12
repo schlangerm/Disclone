@@ -127,11 +127,6 @@
         Today, also reworked the way messages get sent to the backend and the way the backend deals with them. They are once more using an api call to facilitate 
         future chatbot implementations, instead of just using sockets. 
         Added event listener for pressing enter in input boxes to submit without having to click the button. 
-        TODO:   - deal with sent msgs not showing up when switching between chatrooms
-                - check useEffect cleanup, make sure that the double-logs are just because of strict mode and any appropriate cleanup is being done.
-                - rework user object in front, stop throwing the token around so much, remove everything but id from token.
-                - add rename chat route
-                - clean up the code
 
 8/7 -   Discovered a huge bug end of last week in which the central chatting functionality was not working as expected. It was failing to display any new messages from another 
         user, except on pageload. Obviously, this needed to be rectified and so I reworked the sockets and mainly the HomePage and ChatroomBox components.
@@ -145,5 +140,12 @@
         -Created a user class, implemented it in AuthProvider
         -Created rename chat modal and api endpoint to support it
         
-        TODO:   create Chat modal eats first keypress
-                Doesn't appear until page reload: new chat, chat rename, delete chat, user rename
+8/9 -   -Fixed bug: create chat modal ate first keystroke when adding members to chat
+        -Fixed bug: deleted user in a chat would cause a TypeError when rendering the chatroom
+        -Tweaked settings page css
+
+8/12 -  -Leave chat route and frontend UI added
+        -Added logic checking chat owner - leave chat button rendered if not owner, delete chat button if owner\
+
+        TODO: clean code
+        

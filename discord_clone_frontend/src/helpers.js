@@ -15,3 +15,7 @@ export const makeApiRequest = async (url, method, body = '') => {
 
     return response.json();
 }
+
+export const reloadPage= () => {
+    window.location.reload();
+}

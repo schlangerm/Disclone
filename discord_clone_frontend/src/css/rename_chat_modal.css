@@ -4,17 +4,17 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
     align-items: center;
   }
   
   .modal {
-    background: white;
+    background: #2e2e2e;
     padding: 20px;
     border-radius: 8px;
-    width: 300px;
+    width: 400px;
   }
   
   .modal h4 {
@@ -22,7 +22,7 @@
   }
   
   .modal input {
-    width: 100%;
+    width: 95%;
     padding: 8px;
     margin-bottom: 10px;
   }

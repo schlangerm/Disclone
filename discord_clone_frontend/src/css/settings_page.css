@@ -3,3 +3,44 @@
     flex-direction: row;
     height: 100vh; 
 }
+
+.profile-settings-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; 
+    width: 100%; 
+    align-items: flex-start; 
+}
+
+.update-display-name-wrapper {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.update-display-name-button,
+.delete-user-button {
+    padding: 10px 20px;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+}
+
+.update-display-name-button {
+    background-color: #2e2e2e; 
+    color: white;
+}
+
+.update-display-name-button:hover {
+    background-color: black;
+}
+
+.delete-user-button {
+    background-color: red;
+    color: white;
+}
+
+.delete-user-button:hover {
+    background-color: darkred; 
+}

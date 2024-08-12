@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import { useAuth } from "../hooks/AuthProvider";
-import { makeApiRequest } from "../helpers";
+import { makeApiRequest, reloadPage } from "../helpers";
 
 const ProfileSettings = () => {
     const [newName, setNewName] = useState('')
     const { logOut } = useAuth()
     const backendURL = import.meta.env.VITE_BACKEND_URL
-    const token = localStorage.getItem("AuthToken");
     
 
     const handleNameChange = async () => { // api call
@@ -20,7 +19,8 @@ const ProfileSettings = () => {
         });
         console.log(`response: ${JSON.stringify(res)}`);
         if (res.success) {
-            alert('Your display name has been updated. Please reload the page to see changes reflected.')
+            alert('Your display name has been updated.')
+            reloadPage();
         } else {
             alert('Your display name could not be updated.') // TODO: inform users when unique constraint violated
         }
@@ -52,15 +52,17 @@ const ProfileSettings = () => {
 
     return(
         <div className="profile-settings-content">
-            <input 
-                type="text"
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
-                placeholder="Enter new display name"
-            />
-            <button className='update-display-name-button' onClick={handleNameChange}>
-                Update Display Name
-            </button>
+            <div className="update-display-name-wrapper">
+                <input 
+                    type="text"
+                    value={newName}
+                    onChange={(e) => setNewName(e.target.value)}
+                    placeholder="Enter new display name"
+                />
+                <button className='update-display-name-button' onClick={handleNameChange}>
+                    Update Display Name
+                </button>
+            </div>
             <button className='delete-user-button' onClick={handleDeleteUser}>
                 Delete Your Account
             </button>

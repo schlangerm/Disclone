@@ -11,7 +11,12 @@ const Chat = sq.define('Chat', {
     },
     name: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        validate: {
+            notEmpty: {
+                msg: 'Chat name cannot be empty'
+            }
+        }
     }
 }, {
     tableName: 'chats',

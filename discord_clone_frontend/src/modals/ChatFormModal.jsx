@@ -1,21 +1,26 @@
 import { useState } from "react";
 import Modal from 'react-modal';
 import '../css/chat_form_modal.css';
-import { makeApiRequest } from "../helpers";
+import { makeApiRequest, reloadPage } from "../helpers";
 
 const ChatFormModal = ({ isOpen, onRequestClose }) => { //TODO: add friends-list capability so that we can easily select those we want in the chat, and prevent being added by a random person 
     const [chatName, setChatName] = useState('');
     const [addedUsers, setAddedUsers] = useState(['']);
     const [initialMessage, setInitialMessage] = useState(['']);
-    const token = localStorage.getItem("AuthToken")
     const backendURL = import.meta.env.VITE_BACKEND_URL
 
     const handleAddedUsersChange = (index, event) => {
         const newAddedUsers = [...addedUsers];
-        newAddedUsers[index] = event.target.value;
-        setAddedUsers(newAddedUsers);
+        const currentValue = event.target.value;
 
-        if (index === addedUsers.length - 1 && event.target.value !== '') {
+        newAddedUsers[index] = currentValue;
+
+        setAddedUsers(newAddedUsers);
+    };
+
+    const handleInputBlur = (index) => {
+
+        if (index === addedUsers.length - 1 && addedUsers[index].trim() !== '') {
             setAddedUsers([...addedUsers, '']);
         }
     };
@@ -33,6 +38,7 @@ const ChatFormModal = ({ isOpen, onRequestClose }) => { //TODO: add friends-list
         if (res.success) {
             console.log("response is: ", JSON.stringify(res));
             alert("Chat submitted successfully");
+            reloadPage();
         } else {
             console.log("Error: ", res.error);
         }
@@ -42,7 +48,7 @@ const ChatFormModal = ({ isOpen, onRequestClose }) => { //TODO: add friends-list
     const handleSubmit = (event) => {
         event.preventDefault();
         const submittedAddedUsers = addedUsers.filter(addedUser => addedUser.trim() !== '');
-        // TODO submit logic here
+
         console.log("Chat name: ", chatName); //string
         console.log("Added Users: ", addedUsers); //array without owner
         console.log("submitted added users object: ", submittedAddedUsers);
@@ -97,6 +103,7 @@ const ChatFormModal = ({ isOpen, onRequestClose }) => { //TODO: add friends-list
                                 placeholder="Enter a friend's email..."
                                 value={addedUser}
                                 onChange={(event) => handleAddedUsersChange(index, event)}
+                                onBlur={() => handleInputBlur(index)}
                                 autoComplete="off"
                             />
                         ))}

@@ -3,7 +3,7 @@ const models = require('../db/models');
 
 async function setupChatRoutes(app) {
     app.get('/api/chatrooms', async (req, res) => {
-        console.log("user: ", req.user, "requesting chatrooms");
+        console.log("user: ", req.user.id, "requesting chatrooms");
         if (models.User_Chat) {
             console.log("User_Chat model is defined")
         }
@@ -13,7 +13,7 @@ async function setupChatRoutes(app) {
             include: [
                 {
                     model: models.Chat,
-                    through: { attributes: [] },
+                    through: { attributes: ['is_owner'] },
                     include: [
                         {
                             model: models.Message
@@ -27,10 +27,10 @@ async function setupChatRoutes(app) {
                 }
             ]
         });
-        console.log('the chat rows are: ', userChats)
+        //console.log('the chat rows are: ', userChats)
         //db call to get the chatrooms
         const chatrooms = userChats.Chats
-        console.log("chatrooms: ", chatrooms)
+        //console.log("chatrooms: ", chatrooms)
 
         //send the chatrooms back if successful
         res.status(200);
@@ -272,6 +272,44 @@ async function setupChatRoutes(app) {
             res.status(500).json({
                 success: false,
                 error: "Internal Service Error",
+                data: null
+            });
+        };
+    });
+
+    app.delete('/api/chat/leave', async (req, res) => { // chat id in query
+        const chatId = req.query.id;
+        const userId = req.user.id;
+
+        console.log(`query: ${chatId}`);
+
+        try {
+            user_chat = await models.User_Chat.findOne({
+                where: { user_id: userId, chat_id: chatId }
+            });
+
+            if (user_chat.is_owner) {
+                return res.status(400).json({
+                    success: false,
+                    error: "Bad Request",
+                    data: "Owner"
+                });
+            }
+
+            await user_chat.destroy();
+            console.log(`user ${userId} removed themselves from chat ${chatId}`);
+            res.status(200).json({
+                success: true,
+                error: null,
+                data: {
+                    results: `user ${userId} removed from chat ${chatId}`
+                }
+            });
+        } catch (error) {
+            console.log(`error while user ${userId} attempted to leave chat ${chatId} : \n${error}`);
+            res.status(500).json({
+                success: false,
+                error: "Internal Server Error",
                 data: null
             });
         };
