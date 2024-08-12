@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
+
 import '../css/rename_chat_modal.css';
-import { reloadPage } from '../helpers';
 
 const RenameChatModal = ({ isVisible, onClose, onSubmit }) => {
   const [newName, setNewName] = useState('');
@@ -11,7 +11,7 @@ const RenameChatModal = ({ isVisible, onClose, onSubmit }) => {
       setNewName('');
       onClose();
     } else {
-      alert("Cannot submit empty chat name");
+      alert('Cannot submit empty chat name');
     }
     
   };
@@ -19,15 +19,15 @@ const RenameChatModal = ({ isVisible, onClose, onSubmit }) => {
   if (!isVisible) return null;
 
   return (
-    <div className="modal-overlay">
-      <div className="modal">
+    <div className='modal-overlay'>
+      <div className='modal'>
         <h4>Rename Chat</h4>
         <input
-          type="text"
+          type='text'
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
-          placeholder="Enter new chat name"
-          autoComplete="off"
+          placeholder='Enter new chat name'
+          autoComplete='off'
         />
         <button onClick={handleSubmit}>Rename</button>
         <button onClick={onClose}>Cancel</button>

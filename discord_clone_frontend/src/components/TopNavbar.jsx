@@ -1,11 +1,12 @@
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "./hooks/AuthProvider";
-import { useEffect, useState } from "react";
-import { IoSettings } from "react-icons/io5";
-import { IoChevronBackSharp } from "react-icons/io5";
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/AuthProvider';
+import { useEffect, useState } from 'react';
 
-import './css/globals.css';
-import './css/top_navbar.css'
+import { IoSettings } from 'react-icons/io5';
+import { IoChevronBackSharp } from 'react-icons/io5';
+
+import '../css/globals.css';
+import '../css/top_navbar.css';
 
 
 const TopNavbar = () => {
@@ -23,7 +24,7 @@ const TopNavbar = () => {
     }, [user]);
 
     const handleNavigateToSettings = () => {
-        navigate("/settings");
+        navigate('/settings');
     }
 
     const handleBackClick = () => {
@@ -32,27 +33,27 @@ const TopNavbar = () => {
 
 
     return (
-      <header className="top-header">
-        <div className="user-wrapper">
-          <div className="user-name">{userName}</div>
+      <header className='top-header'>
+        <div className='user-wrapper'>
+          <div className='user-name'>{userName}</div>
           <div className='logout-button-wrapper'>
-            <button className="logout-button"
-              children="Logout"
+            <button className='logout-button'
+              children='Logout'
               onClick={() => {
                 logOut()
               }}/>
           </div>
         </div>
-        <div className="settings-button-wrapper">
+        <div className='settings-button-wrapper'>
           <button 
-            className="settings-button" 
+            className='settings-button' 
             onClick={handleNavigateToSettings}>
               <IoSettings />
           </button>
         </div>
-        <div className="back-button-wrapper">
+        <div className='back-button-wrapper'>
           <button 
-            className="back-button"
+            className='back-button'
             onClick={handleBackClick}>
               <IoChevronBackSharp />
           </button>

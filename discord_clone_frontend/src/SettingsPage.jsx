@@ -1,13 +1,11 @@
-// Delete user
-// Change Display Name
+import { useState } from 'react';
 
-import { useState } from "react";
-import LeftNavbar from "./LeftNavbar";
-import MainBody from "./MainBody";
-import ProfileSettings from "./settings/ProfileSettings";
+import LeftNavbar from './components/LeftNavbar';
+import MainBody from './MainBody';
+import ProfileSettings from './settings/ProfileSettings';
 
-import "./css/globals.css";
-import "./css/settings_page.css";
+import './css/globals.css';
+import './css/settings_page.css';
 
 const SettingsPage = () => {
   const [activeSetting, setActiveSetting] = useState(null);
@@ -17,16 +15,13 @@ const SettingsPage = () => {
     { id: 1, type: 'Settings', name: 'Profile', component: ProfileSettings }
   ];
 
-
-
   const onSelectSetting = async (setting) => {
-      console.log("selected setting: ", setting);
+      console.log(`selected setting: ${setting}`);
       setActiveSetting(setting)
   }
 
-
   return (
-    <div className="settings-page">
+    <div className='settings-page'>
       {loading ? (
         <p>Loading...</p>
       ) : (
@@ -34,7 +29,10 @@ const SettingsPage = () => {
           contentArray={settingsArray}  
           onSelectElement={onSelectSetting} />
       )}
-      {activeSetting ? <MainBody activeElement={activeSetting} /> : <p>Select a setting</p>}
+      {activeSetting ? <MainBody activeElement={activeSetting} /> : 
+      <div className='no-selection-message'>
+        <p>Select a setting</p>
+      </div>}
     </div>
   );
 };

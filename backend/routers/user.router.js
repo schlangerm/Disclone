@@ -3,7 +3,7 @@ const models = require('../db/models');
 async function setupUserRoutes(app) {
 
     app.get('/api/user/notifications', (req, res) => {
-        console.log("user: ", req.user, "requesting notifications");
+        console.log(`user:  ${req.user.id} requesting notifications`);
 
         //db call to get notifications 
 
@@ -17,7 +17,7 @@ async function setupUserRoutes(app) {
     });
 
     app.get('/api/user', (req, res) => {
-        console.log(`user ${req.user} requesting user data`);
+        console.log(`user ${req.user.id} requesting user data`);
         
         res.status(200).json({
             success: true,
@@ -35,7 +35,7 @@ async function setupUserRoutes(app) {
     app.put('/api/user/displayname', async (req, res) => {
         // requires newName in body, auth header
         console.log(`user: ${req.user.id} requesting to change display name`);
-        const newName = req.body.newName;
+        const newName = req.body.newName.trim();
         await models.User.update({ name: newName },
             { where: { id: req.user.id } })
             .then(([rowsUpdated]) => {
@@ -51,7 +51,7 @@ async function setupUserRoutes(app) {
                 } else { // TODO: check if not found is the only way this can go wrong without an error thrown
                     res.status(404).json({
                         success: false,
-                        error: "User not found",
+                        error: 'User not found',
                         data: null
                     });
                 }  
@@ -82,7 +82,7 @@ async function setupUserRoutes(app) {
             } else {
                 res.status(404).json({
                     success: false,
-                    error: "User not found",
+                    error: 'User not found',
                     data: null
                 });
             }

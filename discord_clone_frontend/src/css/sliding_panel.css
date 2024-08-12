@@ -1,7 +1,7 @@
 .sliding-panel {
     position: fixed;
-    right: -250px; /* Adjust based on the width of the panel */
-    width: 250px; /* Adjust as needed */
+    right: -250px;
+    width: 250px; 
     height: 70vh;
     background: #2e2e2e;
     box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);

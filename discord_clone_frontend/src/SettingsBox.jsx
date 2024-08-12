@@ -4,10 +4,13 @@ const SettingsBox = ({ activeElement }) => {
     const { name, component: ActiveComponent } = activeElement;
  
     return (
-        <div className="settings-box">
-            <div className="settings-header">
+        <div className='settings-box'>
+            <div className='settings-header'>
                 <h4>{name}</h4>
-                {ActiveComponent ? <ActiveComponent/> : <p>Select a setting</p>}
+                {ActiveComponent ? <ActiveComponent/> : 
+                <div className='no-selection-message'>
+                    <p>No componenet selected</p>
+                </div>}
             </div>
         </div>
     )

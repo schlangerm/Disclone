@@ -1,4 +1,4 @@
-const { sq } = require("../config/db");
+const { sq } = require('../config/db');
 const { DataTypes, Sequelize } = require('sequelize');
 
 const Message = sq.define('Message', {

@@ -4,6 +4,10 @@
     height: 100vh; 
 }
 
+.no-selection-message {
+    padding: 22px;
+}
+
 .profile-settings-content {
     display: flex;
     flex-direction: column;

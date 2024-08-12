@@ -5,7 +5,6 @@ import { useAuth } from './hooks/AuthProvider';
 import './css/globals.css';
 import './css/login_page.css';
 
-
 const LoginPage = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -22,7 +21,7 @@ const LoginPage = () => {
         });
       }
       else {
-        alert("Please provide a valid email and password");
+        alert('Please provide a valid email and password');
       }
     }
 
@@ -33,31 +32,31 @@ const LoginPage = () => {
     }
 
     return (
-      <div className="login-page">
-        <div className="input-wrapper">
+      <div className='login-page'>
+        <div className='input-wrapper'>
           <label>
-            Email:{" "}
+            Email:{' '}
             <input
-              name="email"
-              placeholder="email@host.org"
+              name='email'
+              placeholder='email@host.org'
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               onKeyDown={handleEnterKey}
             />
           </label>
           <label>
-            Password:{" "}
+            Password:{' '}
             <input
-              name="pw"
-              placeholder="password"
-              type="password"
+              name='pw'
+              placeholder='password'
+              type='password'
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               onKeyDown={handleEnterKey}
             />
           </label>
           <button
-            children="Submit"
+            children='Submit'
             onClick={handleSubmit}
           />
         </div>

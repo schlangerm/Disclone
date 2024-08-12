@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import ChatFormModal from './modals/ChatFormModal';
 
-import './css/globals.css';
-import './css/left_navbar.css';
+import ChatFormModal from '../modals/ChatFormModal';
 
+import '../css/globals.css';
+import '../css/left_navbar.css';
 
 const componentMapping = {
   Chatrooms: ChatFormModal,
-  Settings: ChatFormModal, // TODO change
+  Settings: null, // TODO change
 };
 
 //takes an array, each element needs to have .id and .name
@@ -27,9 +27,8 @@ const LeftNavbar = ({ contentArray = [], onSelectElement }) => {
       setModalOpen(false);
     };
 
-
     return (
-        <div className="left-navbar">
+        <div className='left-navbar'>
           {Array.isArray(contentArray) && contentArray.length > 0 ? (
             <>
               <h3>{contentArray[0].type}</h3>
@@ -45,13 +44,17 @@ const LeftNavbar = ({ contentArray = [], onSelectElement }) => {
               <p>No content available</p>
           )}
           <div className='left-navbar-actions'>
-            <Component isOpen={isModalOpen} onRequestClose={closeModal} />
-            <button
-              className='open-modal-button'
-              onClick={openModal}
-            >
-              +
-            </button>
+            {Component && ( 
+              <>
+                <Component isOpen={isModalOpen} onRequestClose={closeModal} />
+                <button
+                  className='open-modal-button'
+                  onClick={openModal}
+                >
+                  +
+                </button>
+              </>
+            )}
           </div>
         </div>
     );
